@@ -1,0 +1,90 @@
+[
+  {
+    "name": "Kraków",
+    "code": "kr",
+    "server": "rozklady.mpk.krakow.pl",
+    "uri": "/linie.aspx",
+    "encoding": "ISO-8859-2",
+    "get": { 
+      "lines"       : [ "a[href$=htm]", ["rw", "w0"] ],
+      "timetables"  : [ "a[href][target='R']" ],
+      "opposite"    : "a[target='_parent']:not(:contains(*))",
+      "expiration"  : [ "table[border=1] tr:last-child b:first", "\\d{2}.\\d{2}.\\d{4}" ],
+      "line_no"     : "table tr:first-child table tr:first-child td:first-child font",
+      "stop_name"   : "table tr:first-child table tr:first-child td:first-child+td font:first-child",
+      "route"       : "table tr:first-child table tr:first-child td:first-child+td font:not(:first-child)",
+      "labels"      : "table[border=1] tr:first-child font", 
+      "minutes"     : "table[border=1] tr:not(:first-child, :last-child) td:nth-child(%d)"
+    }
+  },
+  {
+    "name": "Warszawa",
+    "code": "wa",
+    "server": "www.ztm.waw.pl",
+    "uri": "/rozklad_nowy.php?c=182",
+    "encoding": "UTF-8",
+    "get": { 
+      "lines": [ ".LineList a" ],
+      "timetables": [ "a.st", ["a=1", "w=2"] ],
+      "expiration": [".RozkladLegenda:first p:first-child", "\\d{4}-\\d{2}-\\d{2}"],
+      "line_no": "#PrzystanekRozklad h4 span",
+      "stop_name": "#PrzystanekRozklad p:first strong:first",
+      "labels": ".RozkladObowiazuje",
+      "hours": ".TableHeader:nth(%d) ~ .go:not(.TableHeader:nth(%d) ~ .go)",
+      "minutes": ".go:nth(%d) ~ .mi > span:not(.go:nth(%d) ~ .mi > span)"
+    }
+  },
+  {
+    "name": "Łódź",
+    "code": "el",
+    "server": "www.mpk.lodz.pl",
+    "uri": "/rozklady/linie.jsp"
+  },
+  {
+    "name": "Gdańsk",
+    "code": "gd",
+    "server": "www.ztm.gda.pl",
+    "uri": "/rozklady/"
+  },
+  {
+    "name": "Wrocław" ,
+    "code": "dw",
+    "server": "www.wroclaw.pl",
+    "uri": "/rozklady_jazdy.dhtml"
+  },
+  {
+    "name": "Poznań",
+    "code": "po",
+    "server": "www.mpk.poznan.pl",
+    "uri": "/rozklad-jazdy"
+  },
+  {
+    "name": "Szczecin",
+    "code": "zs",
+    "server": "www.zditm.szczecin.pl",
+    "uri": "/rozklady/listalinii.html"
+  },
+  {
+    "name": "Bydgoszcz",
+    "code": "cb",
+    "server": "www.zdmikp.bydgoszcz.pl",
+    "uri": "/?id=komunikacja_rozklad_jazdy"
+  },
+  {
+    "name": "Górnośląski Okręg Przemysłowy",
+    "code": "sk",
+    "server": "rozklady.kzkgop.pl",
+    "uri": "/index.php?co=rozklady",
+    "encoding": "UTF-8",
+    "get": {
+      "lines"      : ["#wszystkie_linie a"],
+      "timetables" : [".td_przystanek a"],
+      "expiration" : ["#lenegnda_data b", "\\d{4}-\\d{2}-\\d{2}"],
+      "line_no"    : "#tabliczka_topinfo a:first",
+      "stop_name"  : "#tabliczka_topinfo h2 a:first",
+      "labels"     : "tr[class^=typ_dnia] th",
+      "hours"      : "#tabliczka_przystankowo tr td:nth(%d) #blok_godzina b",
+      "minutes"    : "#tabliczka_przystankowo tr td #blok_godzina:nth(%d) sup"
+    }
+  }
+]

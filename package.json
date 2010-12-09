@@ -1,0 +1,5 @@
+{
+  "name"    : "snufkin",
+  "version" : "0.1",
+  "main"    : "import.js"
+}
