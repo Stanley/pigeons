@@ -1,0 +1,3 @@
+[submodule "deps/sizzle"]
+	path = deps/sizzle
+	url = https://github.com/jeresig/sizzle.git

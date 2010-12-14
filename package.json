@@ -1,5 +1,11 @@
 {
-  "name"    : "snufkin",
-  "version" : "0.1",
-  "main"    : "import.js"
+  "name"        : "pigeons",
+  "version"     : "0.1.0",
+  "author"      : "Stanisław Wasiutyński <staszek.wasiutynski@gmail.com>",
+  "description" : "i can haz timetables",
+  "main"        : "lib/pigeons.js",
+  "repository"  : { 
+    "type" : "git",
+    "url"  : "https://github.com/Stanley/pigeons.git"
+  }
 }
