@@ -14,6 +14,14 @@ Installation
 
     $ npm install pigeons
 
+or
+
+    $ git clone https://github.com/stanley/pigeons
+    $ cd pigeons
+    $ git submodule init
+    $ git submodule update
+    $ npm link .
+
 Usage
 -----
 
@@ -32,7 +40,7 @@ TODO
 Want some more?
 ---------------
 
-Check out [Bagatela](https://github.com/Stanley/bagatela) - polish public transport RESTfull API.
+Check out [Bagatela](https://github.com/stanley/bagatela) - polish public transport RESTfull API.
 
 License
 -------
