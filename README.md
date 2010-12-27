@@ -22,6 +22,11 @@ or
     $ git submodule update
     $ npm link .
 
+Testing
+-------
+
+    $ node specs.js
+
 Usage
 -----
 
