@@ -1,13 +1,12 @@
 Pigeons
 =======
 
-Pigeons are flying (web)rats which live in every major city. Their job is to watch closely every bus stop (and tram stop for that matter) and report back any changes in timetables to the headquarter.
+Pigeons are flying (web)rats which live in every major city. Their job is to watch closely every bus stop (or tram stop for that matter) and report back any changes in timetables to the headquarter.
 
 Features
 --------
 
 * Compatibility with every major public transport comapny's website in Poland.
-* Configuration files for 10 biggest cities in Poland.
 
 Installation
 ------------
@@ -31,10 +30,15 @@ Usage
 -----
 
     var Client = require('pigeons').Client,
-        config = {};
+        config = {}; // See https://github.com/Stanley/pigeons/wiki for details
 
     var mpk = new Client(config);
     mpk.getAll();
+
+CAUTION
+-------
+
+API will change until 1.0 release.
 
 TODO
 ----
