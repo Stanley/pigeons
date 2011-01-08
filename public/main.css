@@ -1,0 +1,124 @@
+body{
+  margin: 0;
+  background: #7FBCD8 url(images/clouds1.png) left top repeat-x;
+  color: #EDEBAE;
+  font-family: "Georgia", "Times New Roman", Times, serif;
+  -webkit-animation-duration : 80s;
+}
+
+a{
+  color: #4B7986;
+}
+
+select{
+  font-size: 50px;
+  width: 100%;
+  background-color: #fff;
+  font-family: "Georgia", "Times New Roman", Times, serif;
+  color: #666;
+}
+
+#container{
+  background-color: #568EB1;
+  border: 15px #4f809f solid;
+  border-radius: 15px;
+  margin: 130px auto 5px;
+  padding: 20px;
+  position: relative;
+  width: 500px;
+  opacity: 0.9;
+}
+
+#chart{
+  position:absolute;
+  z-index: -1;
+  bottom:0;
+  width: 100%;
+  height: 250px;
+  margin: 0 !important
+}
+
+#last:hover #chart{
+  z-index: 1;
+}
+
+@-webkit-keyframes position {
+  0%   { background-position-x: 0}
+  100% { background-position-x: 720px}
+}
+
+#clouds{
+  position : absolute;
+  background-image: url(images/clouds2.png);
+  height: 214px;
+  width: 100%;
+  -webkit-animation-duration : 30s;
+}
+
+body, #clouds{
+  -webkit-animation-name: position;
+  -webkit-animation-direction : normal;
+  -webkit-animation-delay : 0s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+}
+
+#last{
+  height: 250px;
+  border: 1px solid #97D45A;
+  margin: 20px 0;
+  position: relative
+}
+
+#last > * {
+  margin: 10px;
+  position: absolute;
+}
+
+#pigeon {
+  position: absolute;
+  top: -125px;
+  left: -60px
+}
+
+#stats{
+  bottom: 0
+}
+
+#percent{
+  font-size: 50px;
+  right: 0
+}
+
+#errors{
+  bottom: 0;
+  right: 0
+}
+
+#past{
+  white-space:nowrap;
+  overflow: auto;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  text-align: right
+}
+
+#past > span {
+  display: inline-block;
+  width: 45px;
+  height: 45px;
+  text-align: right;
+  font-size: 20px;
+  padding: 5px;
+  background-color: #97D45A
+}
+
+#foot{
+  font-size: 12px;
+  margin:auto;
+  width: 500px;
+}
+
+#foot > span:last-child{
+  float: right;
+}

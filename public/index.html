@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Pigeons watch</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <div id="clouds"></div>
+    <div id="container">
+      <img src="images/pigeon.png" id="pigeon" />
+      <select>
+        <option>Kraków</option>
+        <option>Warszawa</option>
+      </select>
+      <span>
+        Uaktualnienie co 1 dzień o godzinie 12:00
+      </span>
+      <div id="last">
+        <div id="chart">
+          <img src="https://chart.googleapis.com/chart?cht=lc:nda&chs=480x200&chd=t:94,88,64,71,61,78,75,82,88,99,90,79,52,51,64,58,91,68,77,93,76,70,99,80,90,52,78,60,90,77,97,81,52,63,59,71,81,52,92,59,65,81,97,87,90,95,71,77,83,95,53,74,87,90,68,55,65,50,53,77,95,86,83,87,59,59,81,87,53,80,83,91,99,95,95,84,57,72,86,67,95,89,55,70,93,55,97,50,76,50,62,66,72,56,73,71,98,96,58,80&chf=bg,s,568EB1" />
+        </div>
+        <span>Poniedziałek, 26 styczeń 2011 r.</span>
+
+        <span id="percent">100%</span>
+
+        <table id="stats">
+          <tr>
+            <td>nowych linii:</td>
+            <td>0/51</td>
+          </tr>
+          <tr>
+            <td>nowych rozkładów:</td>
+            <td>68/1827</td>
+          </tr>
+          <tr>
+            <td>wygasłych rozkładów:</td>
+            <td>0/1973</td>
+          </tr>
+        </table>
+         
+        <table id="errors">
+          <tr>
+            <td>status</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>#200</td>
+            <td>123</td>
+          </tr>
+          <tr>
+            <td>#500</td>
+            <td>6</td>
+          </tr>
+        </table>
+        
+      </div>
+      <div id="past">
+        <span>
+          5.01
+        </span>
+        <span>
+          6.01
+        </span>
+        <span>
+          7.01
+        </span>
+      </div>
+    </div>
+      <div id="foot">
+        <span>
+          Brought to you by 
+          <a href="http://twitter.com/wasiutynski">@wasiutynski</a>
+        </span>
+        <span>
+          <a href="http://stanley.github.com/bagatela">api</a>
+          |
+          <a href="http://github.com/stanley/pigeons">source code</a>
+          |
+          <a href="http://twitter.com/bagatela_status">@bagatela_status</a>
+        </span>
+      </div>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+      <script type="text/javascript" src="javascripts/highcharts.js"></script>
+      <script type="text/javascript" src="javascripts/main.js"></script>
+  </body>
+</html>
