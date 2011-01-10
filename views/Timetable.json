@@ -1,0 +1,112 @@
+{
+  "language": "javascript",
+  "views": {
+    "by_stop": {
+      "map": "function(doc) {
+        if(doc.type==\"Timetable\"){
+          var route = doc.route ? doc.route.split(\" - \") : [];
+          emit([doc.stop, parseInt(doc.line), route[2]], doc);
+        }
+      }"
+    },
+    "by_stop_id": {
+      "map": "function(doc) {
+        var id = doc._id;
+        if(doc.type === \"Stop\"){
+          emit([id, 0], doc);
+        } else if(doc.type === \"Timetable\") {
+          emit([doc.stop_id, 1], doc);
+        }
+      }"
+    },
+    "by_line": {
+      "map": "function(doc) {
+        if(doc.type==\"Timetable\"){
+          var route = doc.route ? doc.route.split(\" - \") : [];
+          var pio;
+          if(doc.url){
+            var split = doc.url ? doc.url.split(\"/\") : [];
+            var id = split[split.length-1];
+            pio = parseInt(id.split(\".\")[0].split(\"t\")[1], 10);
+          } else {
+            pio = null
+          }
+          emit([parseInt(doc.line), route[2], pio], doc);
+        }
+      }",
+      "reduce": "function(keys,values,rereduce){
+        function unique(a) {
+           var r = new Array();
+           o:for(var i = 0, n = a.length; i < n; i++) {
+              for(var x = 0, y = r.length; x < y; x++) {
+                 if(r[x]==a[i]) continue o;
+              }
+              r[r.length] = a[i];
+           }
+           return r;
+        }
+
+        if(rereduce){
+          return unique(values.map(function(val){
+              return unique(val)
+            }).reduce(function(a,b) {
+              return a.concat(b);
+            }, []))
+        } else {
+          return values.map(function(doc){return doc.route})
+        }
+      }"
+    },
+    "by_url": {
+      "map": "function(doc) {
+        if(doc.type == \"Timetable\" && doc.url){
+          var split = doc.url.split(new RegExp(':\/\/|\/'));
+          emit([split[1], split[3], split[4]], doc);
+        }
+      }"
+    }
+  },
+  "lists":{
+    "filter": "function(head,req){
+      var q = req.query;
+      var result = head;
+      delete result['update_seq'];
+      var rows = Array();
+      var row;
+
+      if(q.only){
+        if(q.exept)
+          return 'blad';
+
+        var only = q.only.split(',');
+        while(row = getRow()){
+          var i = only.length;
+          var new_row = row;
+          var doc = {};
+          while(i--)
+            doc[only[i]] = row['value'][only[i]];
+          new_row['value'] = doc;
+          rows.push(new_row);
+        }
+      } else if(q.except) {
+        var except = q.except.split(',');
+        while(row = getRow()){
+          var i = except.length;
+          while(i--)
+            delete row['value'][except[i]];
+          rows.push(row);
+        }
+      } else
+        return 'blad 2';
+
+      result['rows'] = rows;
+      return(JSON.stringify(result));
+    }"
+  },
+  "updates":{
+    "dump": "function(doc,req){
+      doc.valid_until = req.form.new_doc_since;
+      return [doc, \"ok\"];
+    }"
+  }
+}
