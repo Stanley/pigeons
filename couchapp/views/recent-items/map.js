@@ -1,5 +1,3 @@
 function(doc) {
-  if (doc.created_at) {
-    emit(doc.created_at, doc);
-  }
+  emit([doc.db, doc.created_at], doc.response_time);
 };

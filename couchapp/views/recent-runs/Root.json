@@ -1,8 +1,0 @@
-{
-  "language": "javascript",
-  "views": {
-    "by_age": {
-      "map": "function(doc) { if(doc.type == 'Root') emit([doc.db, doc.created_at], null) }"
-    }
-  }
-}
