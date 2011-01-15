@@ -1,13 +1,17 @@
 body{
   margin: 0;
-  background: #7FBCD8 url(images/clouds1.png) left top repeat-x;
+  background: #7FBCD8 url(../images/clouds1.png) left top repeat-x;
   color: #EDEBAE;
   font-family: "Georgia", "Times New Roman", Times, serif;
-  -webkit-animation-duration : 80s;
+  /*-webkit-animation-duration : 80s;*/
 }
 
 a{
   color: #4B7986;
+}
+
+a:hover{
+  text-decoration: underline !important;
 }
 
 select{
@@ -49,19 +53,19 @@ select{
 
 #clouds{
   position : absolute;
-  background-image: url(images/clouds2.png);
+  background-image: url(../images/clouds2.png);
   height: 214px;
   width: 100%;
   -webkit-animation-duration : 30s;
 }
 
-body, #clouds{
-  -webkit-animation-name: position;
-  -webkit-animation-direction : normal;
-  -webkit-animation-delay : 0s;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-timing-function: linear;
-}
+/*body, #clouds{*/
+  /*-webkit-animation-name: position;*/
+  /*-webkit-animation-direction : normal;*/
+  /*-webkit-animation-delay : 0s;*/
+  /*-webkit-animation-iteration-count: infinite;*/
+  /*-webkit-animation-timing-function: linear;*/
+/*}*/
 
 #last{
   height: 250px;
@@ -73,6 +77,11 @@ body, #clouds{
 #last > * {
   margin: 10px;
   position: absolute;
+  text-shadow: 3px 3px 3px #568EB1;
+}
+
+.highcharts-tooltip{
+  text-shadow: none
 }
 
 #pigeon {
@@ -90,7 +99,7 @@ body, #clouds{
   right: 0
 }
 
-#errors{
+#status{
   bottom: 0;
   right: 0
 }
@@ -100,17 +109,20 @@ body, #clouds{
   overflow: auto;
   padding-bottom: 10px;
   margin-bottom: 20px;
-  text-align: right
+  text-align: right;
+  min-height: 55px
 }
 
-#past > span {
+#past > a {
   display: inline-block;
   width: 45px;
-  height: 45px;
   text-align: right;
-  font-size: 20px;
-  padding: 5px;
-  background-color: #97D45A
+  font-size: 19px;
+  padding: 16px 5px;
+  background-color: #97D45A;
+  margin: 0 4px;
+  color: #EDEBAE;
+  text-decoration: none
 }
 
 #foot{
