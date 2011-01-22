@@ -1,21 +1,50 @@
-require.paths.push("./lib");
-var jasmine = require('jasmine');
+var jasmine = require('jasmine-node');
+var sys = require('sys'),
+    Path= require('path');
 
-for(var key in jasmine) {
+var SPEC_FOLDER= Path.join(process.cwd(), 'spec'),
+    SPEC_MATCHER_REGEX= "Spec\.(js|coffee)$",
+    HELPER_MATCHER_REGEX= "Helper\.(js|coffee)$";
+
+for (var key in jasmine)
   global[key] = jasmine[key];
-}
 
 var isVerbose = false;
 var showColors = true;
-process.argv.forEach(function(arg){
-  switch(arg) {
-  case '--color': showColors = true; break;
-  case '--noColor': showColors = false; break;
-  case '--verbose': isVerbose = true; break;
+var spec = SPEC_MATCHER_REGEX;
+
+function escapeRegex(text) {
+  return text.replace(escapeRegex._escapeRegex, '\\$1');
+}
+
+/** The special characters in a string that need escaping for regular expressions. */
+escapeRegex.specialCharacters= ['/', '.', '*', '+', '?', '|',
+               '(', ')', '[', ']', '{', '}', '\\'];
+
+/** A regular expression that will match any special characters that need to be
+    escaped to create a valid regular expression. */
+escapeRegex._escapeRegex= new RegExp('(\\'+ escapeRegex.specialCharacters.join("|\\") + ')', 'g');
+
+process.argv.forEach(function(arg, index){
+  switch(arg){
+    case '--color':
+      showColors = true;
+      break;
+    case '--noColor':
+      showColors = false;
+      break;
+    case '--verbose':
+      isVerbose = true;
+      break;
+    
+    default:
+      if (index>1)
+        spec= "^.*/" + escapeRegex(arg) + "$";
+      break;
   }
 });
 
-
-jasmine.executeSpecsInFolder(__dirname + '/spec', function(runner, log){
+jasmine.loadHelpersInFolder(SPEC_FOLDER, HELPER_MATCHER_REGEX);
+jasmine.executeSpecsInFolder(SPEC_FOLDER, function(runner, log){
   process.exit(runner.results().failedCount);
-}, isVerbose, showColors);
+}, isVerbose, showColors, spec);
