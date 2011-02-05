@@ -8,15 +8,16 @@ describe('couchdb', function(){
 
   var db;
   request({method: 'DELETE', uri: uri}, function(){
-    var config = {code: database};
-    var pigeons = new Pigeons(config);
-    pigeons.put({_id: "5318008", foo: "bar"}, "<html>Hello!</html>", function(err, resp, body){
-      db = body;
+    var config = {db: database};
+    var pigeons = new Pigeons(config, function(){
+      pigeons.put({_id: "5318008", foo: "bar"}, "<html>Hello!</html>", function(err, resp, body){
+        db = body;
+      });
     });
   });
 
   beforeEach(function(){
-    waitsFor(function(){ return db; }, 'Cound not save a document.', 500);
+    waitsFor(function(){ return db; }, 'Could not create a database', 200);
   })
 
   it('should create database', function(){
@@ -34,11 +35,17 @@ describe('couchdb', function(){
   });
 
   describe('document', function(){
+
     var doc;
-    request({uri: uri +'/5318008'}, function(err, resp, body){
-      doc = body;
+    waitsFor(function(){ return db; }, 'Could not create a database', 200);
+    runs(function(){
+      request({uri: uri +'/5318008'}, function(err, resp, body){
+        doc = JSON.parse(body);
+      });
     });
-    waitsFor(function(){ return doc; });
+    beforeEach(function(){
+      waitsFor(function(){ return doc; }, 'Coould not save a document', 100);
+    })
 
     it('should be saved', function(){
       expect(doc.foo).toEqual("bar");
@@ -64,7 +71,7 @@ describe('couchdb', function(){
     waitsFor(function(){ return response && html; });
 
     runs(function(){
-      expect(response.headers).toEqual("text/html");
+      expect(response.headers['content-type']).toEqual("text/html");
       expect(html).toEqual("<html>Hello!</html>");
     });
   });

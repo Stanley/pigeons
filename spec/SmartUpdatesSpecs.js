@@ -1,51 +1,89 @@
-var Pigeons = require('pigeons').Client;
+var Pigeons = require('pigeons').Client
+  , request = require('request')
 
 describe('local cache check', function(){
 
-  this.pigeons = new Pigeons({ log: true });
-
-  it('should retrieve all recent timetables', function(){
-    var root = JSON.stringify({rows: [{id: '10', key: ['test', '2011-01-22'], value: 1}]});
-    var timetables = JSON.stringify({ rows: [{id: '11', key: ['test'], value: {id: '11', valid_since: '21.01.2011'}}]});
-
-    pigeons.getAll();
-
-    pigeons.get.mostRecentCall.args[1](null, {}, root);
-    pigeons.get.mostRecentCall.args[1](null, {}, timetables);
-
-    expect(pigeons.existing).toEqual({'11': '21.01.2011'});
+  var pigeons;
+  var uri = 'http://localhost:5984/test_logs';
+  request({method: 'DELETE', uri: uri}, function(error){
+    if(!error){
+      pigeons = new Pigeons({
+        log: uri, 
+        db: 'test',
+        get: { valid_from: '.valid_from'},
+        server: 'mpk.krakow.pl'
+      });
+    }
   });
 
-  describe('valid_since', function(){
+  beforeEach(function(){
+    waitsFor(function(){ return pigeons }, 'initialize pigeons', 200);
+  })
 
-    beforeEach(function(){
-      this.callback = jasmine.createSpy();
-      
-      spyOn(this.pigeons, 'get');
-      spyOn(this.pigeons, 'put');
+  it('should retrieve all recent timetables', function(){
+
+    var root, timetable;
+    // Populate logs database
+    request({
+      method: 'POST', uri: uri,
+      json: {type: 'Root', db: 'test'}
+    }, function(error){ root = !error; });
+
+    // Most recent timetable
+    request({
+      method: 'POST', uri: uri,
+      json: {url: 'http://mpk.krakow.pl/timetables/1', type: 'Timetable', db: 'test', valid_from: '21.01.2011'}
+    }, function(error){ timetable = !error; });
+
+    // TODO: Other, not relevant timetable
+
+    waitsFor(function(){
+      return root && timetable;
+    }, 'saving logs', 200);
+
+    runs(function(){
+      var finished;
+      var callback = jasmine.createSpy();
+      spyOn(pigeons, 'get').andCallFake(function(){
+        finished = true;
+      });
+      pigeons.getAll();
+
+      waitsFor(function(){return finished}, 'logs', 200);
+      runs(function(){
+        expect(pigeons.get).toHaveBeenCalled();
+        expect(pigeons.existing).toEqual({'http://mpk.krakow.pl/timetables/1': '21.01.2011'});
+      })
     });
+  });
 
+  describe('valid_from', function(){
+
+    var callback = jasmine.createSpy();
+    beforeEach(function(){
+      spyOn(pigeons, 'get');
+      spyOn(pigeons, 'put');
+    });
+    
     it('should result in timetable update when outdated', function(){
-      var pigeons = this.pigeons;
-      var callback = this.callback;
-      var html = '<html></html>';
+      var html = "<div class=\"valid_from\">28.01.2011</div>";
 
-      pigeons.existing = {'1': {valid_since: '22.01.2011'}};
+      pigeons.existing = {'http://mpk.krakow.pl/timetables/1': {valid_from: '22.01.2011'}};
       pigeons.getTimetable('/timetables/1', callback);
-      pigeons.get.mostRecentCall.args[1](null, {}, html);
+      pigeons.get.mostRecentCall.args[1]({ statusCode: 200 }, Sizzle(html), html);
 
-      expect(pigeons.put).toHaveBeenCalledWith({table: {'Dni parzyste': {'12': '12'}}, 'valid_since': '22.01.2011'}, html);
-      expect(callback).toHaveBeenCalled();
+      expect(pigeons.put).toHaveBeenCalledWith({
+        valid_from: '28.01.2011',
+        url: 'http://mpk.krakow.pl/timetables/1'
+      }, html, callback);
     });
 
     it('should not result in timetable update that was not changed on the server', function(){
-      var pigeons = this.pigeons;
-      var callback = this.callback;
-      var html = '<html></html>';
+      var html = "<div class=\"valid_from\">28.01.2011</div>";
 
-      pigeons.existing = {'2': {valid_since: '01.01.2011'}};
+      pigeons.existing = {'http://mpk.krakow.pl/timetables/2': {valid_from: '28.01.2011'}};
       pigeons.getTimetable('/timetables/2', callback);
-      pigeons.get.mostRecentCall.args[1](null, {}, html);
+      pigeons.get.mostRecentCall.args[1]({ statusCode: 200 }, Sizzle(html), html);
 
       expect(pigeons.put).not.toHaveBeenCalled();
       expect(callback).toHaveBeenCalled();

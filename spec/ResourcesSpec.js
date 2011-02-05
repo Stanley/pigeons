@@ -66,11 +66,11 @@ describe('database adapter', function(){
     spyOn(pigeons, 'put');
 
     pigeons.getTimetable('/timetables/1')
-    pigeons.get.mostRecentCall.args[1]({ statusCode: 200 }, Sizzle(document), document);
+    pigeons.get.mostRecentCall.args[1]({ statusCode: 200 }, Sizzle(body), document);
 
     expect(pigeons.get).toHaveBeenCalled();
     expect(pigeons.put).toHaveBeenCalled();
     expect(pigeons.put.mostRecentCall.args[0].table).toEqual({"Dni słoneczne": {"12": ["00"]}});
-    expect(pigeons.put.mostRecentCall.args[1]).toEqual(document)
+    expect(pigeons.put.mostRecentCall.args[1]).toEqual(document);
   });
 });
