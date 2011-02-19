@@ -3,21 +3,23 @@ var Pigeons = require('pigeons').Client
 
 describe('local cache check', function(){
 
-  var pigeons;
+  var pigeons, ready;
   var uri = 'http://localhost:5984/test_logs';
   request({method: 'DELETE', uri: uri}, function(error){
     if(!error){
       pigeons = new Pigeons({
         log: uri, 
-        db: 'test',
+        db: 'http://localhost:5984/test_pigeons',
         get: { valid_from: '.valid_from'},
         server: 'mpk.krakow.pl'
+      }, function(){
+        ready = true
       });
     }
   });
 
   beforeEach(function(){
-    waitsFor(function(){ return pigeons }, 'initialize pigeons', 200);
+    waitsFor(function(){ return ready }, 'initialize pigeons', 200);
   })
 
   it('should retrieve all recent timetables', function(){
@@ -26,13 +28,13 @@ describe('local cache check', function(){
     // Populate logs database
     request({
       method: 'POST', uri: uri,
-      json: {type: 'Root', db: 'test'}
+      json: {type: 'Root', db: 'test', created_at: new Date()}
     }, function(error){ root = !error; });
 
     // Most recent timetable
     request({
       method: 'POST', uri: uri,
-      json: {url: 'http://mpk.krakow.pl/timetables/1', type: 'Timetable', db: 'test', valid_from: '21.01.2011'}
+      json: {url: 'http://mpk.krakow.pl/timetables/1', type: 'Timetable', db: 'test_pigeons', valid_from: '21.01.2011', created_at: new Date()}
     }, function(error){ timetable = !error; });
 
     // TODO: Other, not relevant timetable
@@ -51,7 +53,6 @@ describe('local cache check', function(){
 
       waitsFor(function(){return finished}, 'logs', 200);
       runs(function(){
-        expect(pigeons.get).toHaveBeenCalled();
         expect(pigeons.existing).toEqual({'http://mpk.krakow.pl/timetables/1': '21.01.2011'});
       })
     });

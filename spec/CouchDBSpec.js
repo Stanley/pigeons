@@ -3,11 +3,10 @@ var Pigeons = require('pigeons').Client;
 describe('couchdb', function(){
 
   var request = require('request');
-  var database = 'test_pigeons';
-  var uri = 'http://localhost:5984/'+ database;
+  var database = 'http://localhost:5984/test_pigeons';
 
   var db;
-  request({method: 'DELETE', uri: uri}, function(){
+  request({method: 'DELETE', uri: database}, function(){
     var config = {db: database};
     var pigeons = new Pigeons(config, function(){
       pigeons.put({_id: "5318008", foo: "bar"}, "<html>Hello!</html>", function(err, resp, body){
@@ -23,7 +22,7 @@ describe('couchdb', function(){
   it('should create database', function(){
     var response;
 
-    request({uri: uri}, function(err, resp, body){
+    request({uri: database}, function(err, resp, body){
       response = resp;
     });
 
@@ -39,7 +38,7 @@ describe('couchdb', function(){
     var doc;
     waitsFor(function(){ return db; }, 'Could not create a database', 200);
     runs(function(){
-      request({uri: uri +'/5318008'}, function(err, resp, body){
+      request({uri: database +'/5318008'}, function(err, resp, body){
         doc = JSON.parse(body);
       });
     });
@@ -63,7 +62,7 @@ describe('couchdb', function(){
   it('should save html source', function(){
     var response, html;
 
-    request({uri: uri +'/5318008/source.html'}, function(err, resp, body){
+    request({uri: database +'/5318008/source.html'}, function(err, resp, body){
       response = resp;
       html = body;
     });
