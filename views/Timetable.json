@@ -105,7 +105,7 @@
   },
   "updates":{
     "dump": "function(doc,req){
-      doc.valid_until = req.form.new_doc_since;
+      doc.valid_until = req.query.new_doc_since;
       return [doc, \"ok\"];
     }"
   }

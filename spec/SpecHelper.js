@@ -1,7 +1,9 @@
 require.paths.push('./lib');
 
+request = require('request')
 Jsdom = require('jsdom');
 Pigeons = require('pigeons.js').Client;
+console.log = function(){}
 
 var NodeSizzle = require('node-sizzle.js').Sizzle;
 var sizzle = new NodeSizzle();
