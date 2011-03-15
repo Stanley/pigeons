@@ -77,7 +77,7 @@ select{
 #last > * {
   margin: 10px;
   position: absolute;
-  text-shadow: 3px 3px 3px #568EB1;
+  text-shadow: 2px 2px 2px #568EB1, 2px 2px 2px #568EB1, 2px 2px 2px #568EB1, 2px 2px 2px #568EB1;
 }
 
 .highcharts-tooltip{

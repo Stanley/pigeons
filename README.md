@@ -8,6 +8,11 @@ Features
 
 * Compatibility with every major public transport comapny's website in Poland.
 
+Requirements
+------------
+
+* node-iconv
+
 Installation
 ------------
 
@@ -29,16 +34,22 @@ Testing
 Usage
 -----
 
-    var Client = require('pigeons').Client,
-        config = {}; // See https://github.com/Stanley/pigeons/wiki for details
+To gather data from custom source:
 
-    var mpk = new Client(config);
+    var Pigeons = require('pigeons').Client,
+        config = { ... }; // See https://github.com/Stanley/pigeons/wiki for details
+
+    var mpk = new Pigeons(config);
     mpk.getAll();
+
+Web interface is a couchapp. Works only if you enable logging to couchdb.
+
+    $ couchapp push couch/app.js http://localhost:5984/pigeons
 
 CAUTION
 -------
 
-API will change until 1.0 release.
+API will change until 1.0 is released.
 
 TODO
 ----

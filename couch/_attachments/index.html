@@ -15,6 +15,10 @@
         <option value="el">Łódź</option>
         <option value="gd">Gdańsk</option>
         <option value="dw">Wrocław</option>
+        <option value="po">Poznań</option>
+        <option value="zs">Szczeciń</option>
+        <option value="cb">Bydgoszcz</option>
+        <option value="sk">GOP</option>
       </select>
       <span>
         Uaktualnienie co 1 dzień o godzinie 00:00
@@ -28,15 +32,15 @@
         <table id="stats">
           <tr>
             <td>Liczba linii:</td>
-            <td id='lines'></td>
+            <td id='lines'>0</td>
           </tr>
           <tr>
             <td>Nowych rozkładów:</td>
-            <td><span id='new_timetables'></span>/<span id='all_timetables'></span></td>
+            <td><span id='new_timetables'>0</span>/<span id='all_timetables'>0</span></td>
           </tr>
           <tr>
             <td>Wygasłych rozkładów:</td>
-            <td><span id='deleted_timetables'></span>/<span id='previous_timetables'></span></td>
+            <td><span id='deleted_timetables'>0</span></td>
           </tr>
         </table>
          
@@ -66,7 +70,7 @@
       <script src="/_utils/script/json2.js"></script>
       <script src="/_utils/script/jquery.js"></script>
       <script src="/_utils/script/jquery.couch.js"></script>
-      <script src="vendor/couchapp/jquery.couch.app.js"></script>
+      <script src="javascripts/jquery.couch.app.js"></script>
       <script src="javascripts/highcharts.js"></script>
       <script src="javascripts/main.js"></script>
   </body>

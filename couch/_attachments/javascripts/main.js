@@ -34,7 +34,7 @@ $.couch.app(function(app){
                text: null
              },
       gridLineColor: '#6a9bba',
-      max: 200,
+      max: 1000,
       min: 0
     },
     legend: {
@@ -127,10 +127,10 @@ $.couch.app(function(app){
                success: function(logs){
                  new Highcharts.Chart($.extend(chart_options, {
                    series: [
-                     {name: 'źródło danych', type: 'scatter', data: logs.rows.map(function(log){ return log.value.remote }).filter(function(_, i){
+                     {name: 'źródło danych', type: 'scatter', data: logs.rows.map(function(log){ return log.value && log.value.remote ? (log.value.remote < 1000 ? log.value.remote : 1000) : 0 }).filter(function(_, i){
                        return true
                      })},
-                     {name: 'baza danych', type: 'scatter', data: logs.rows.map(function(log){ return log.value.db || 0 }).filter(function(_, i){
+                     {name: 'baza danych', type: 'scatter', data: logs.rows.map(function(log){ return log.value && log.value.db ? log.value.db : 0 }).filter(function(_, i){
                        return true
                      }), color: '#BA1E16'}
                    ]
@@ -143,7 +143,8 @@ $.couch.app(function(app){
              // Date
              var days = ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"];
              var months = ["styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"]
-             $('#date').text(days[date.getDay()] +', '+ date.getDate() +' '+ months[date.getMonth()] +' '+ date.getFullYear() +' r.')
+             $('#date').text(days[date.getDay()] +', '+ date.getDate() +' '+ months[date.getMonth()] +' '+ date.getFullYear() +' r.');
+             $('#deleted_timetables').text(day.removes ? day.removes.length : 0);
 
              // Errors table
              app.view('status-code', $.extend({
@@ -160,39 +161,27 @@ $.couch.app(function(app){
              }, keys));
 
              // Lines count
-             $('#lines').text(day.value);
+             app.view('lines', $.extend({
+               group: false,
+               success: function(result){
+                 $('#lines').text(result.rows.length ? result.rows[0].value : 0)
+               }
+             }, keys));
 
-             // New timetables
-             app.view('new', $.extend({
+             //New timetables
+             app.view('new-timetables', $.extend({
                group: false,
                success: function(result){
                  $('#new_timetables').text(result.rows.length ? result.rows[0].value : 0)
                }
-
              }, keys))
+
              app.view('timetables', $.extend({
                group: false,
                success: function(result){
                  $('#all_timetables').text(result.rows.length ? result.rows[0].value : 0)
                }
              }, keys));
-
-             // Old & removed
-             app.view('deleted', $.extend({
-               group: false,
-               success: function(result){
-                 $('#deleted_timetables').text(result.rows.length ? result.rows[0].value : 0)
-               }
-             }, keys));
-
-             app.view('timetables', {
-               group: false,
-               startkey: [db, prev ? prev.rel : null],
-               endkey: [db, start],
-               success: function(result){
-                 $('#previous_timetables').text(result.rows.length ? result.rows[0].value : 0)
-               }
-             });
           })
           div.prepend(link);
           past.scrollLeft(past.width());
