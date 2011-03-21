@@ -5,13 +5,14 @@ describe('local cache check', function(){
 
   var pigeons, ready;
   var uri = 'http://localhost:5984/test_logs';
+  var db =  'http://localhost:5984/test_pigeons';
   request({method: 'DELETE', uri: uri}, function(error){
     if(!error){
       pigeons = new Pigeons({
         log: uri, 
-        db: 'http://localhost:5984/test_pigeons',
+        db: db,
         get: { valid_from: '.valid_from'},
-        server: 'mpk.krakow.pl'
+        server: 'http://mpk.krakow.pl'
       }, function(){
         ready = true
       });
@@ -24,24 +25,15 @@ describe('local cache check', function(){
 
   it('should retrieve all recent timetables', function(){
 
-    var root, timetable;
-    // Populate logs database
-    request({
-      method: 'POST', uri: uri,
-      json: {type: 'Root', db: 'test', created_at: new Date()}
-    }, function(error){ root = !error; });
-
-    // Most recent timetable
-    request({
-      method: 'POST', uri: uri,
-      json: {url: 'http://mpk.krakow.pl/timetables/1', type: 'Timetable', db: 'test_pigeons', valid_from: '21.01.2011', created_at: new Date()}
-    }, function(error){ timetable = !error; });
-
-    // TODO: Other, not relevant timetable
+    var timetable;
+    request({ method: 'POST', uri: db,
+              json: {type: 'Timetable', url: 'http://mpk.krakow.pl/timetables/1', valid_from: '21.01.2011' }}, function(){
+      timetable = true;
+    });
 
     waitsFor(function(){
-      return root && timetable;
-    }, 'saving logs', 200);
+      return timetable;
+    }, 'history', 200);
 
     runs(function(){
       var finished;
@@ -53,14 +45,14 @@ describe('local cache check', function(){
 
       waitsFor(function(){return finished}, 'logs', 200);
       runs(function(){
-        expect(pigeons.existing).toEqual({'http://mpk.krakow.pl/timetables/1': '21.01.2011'});
+        expect(pigeons.existing['http://mpk.krakow.pl/timetables/1']).toBeDefined();
+        expect(pigeons.existing['http://mpk.krakow.pl/timetables/1'].valid_from).toEqual('21.01.2011')
       })
     });
   });
 
   describe('valid_from', function(){
 
-    var callback = jasmine.createSpy();
     beforeEach(function(){
       spyOn(pigeons, 'get');
       spyOn(pigeons, 'put');
@@ -70,21 +62,25 @@ describe('local cache check', function(){
       var html = "<div class=\"valid_from\">28.01.2011</div>";
 
       pigeons.existing = {'http://mpk.krakow.pl/timetables/1': {valid_from: '22.01.2011'}};
-      pigeons.getTimetable('/timetables/1', callback);
-      pigeons.get.mostRecentCall.args[1]({ statusCode: 200 }, Sizzle(html), html);
+      pigeons.getTimetable('/timetables/1');
+      pigeons.get.mostRecentCall.args[1](Sizzle(html), html, true);
 
-      expect(pigeons.put).toHaveBeenCalledWith({
+      expect(pigeons.put.mostRecentCall.args[0]).toEqual({
         valid_from: '28.01.2011',
         url: 'http://mpk.krakow.pl/timetables/1'
-      }, html, callback);
+      });
+      expect(pigeons.put.mostRecentCall.args[1]).toEqual(html);
+      // TODO
+      // expect(callback).toHaveBeenCalled();
     });
 
     it('should not result in timetable update that was not changed on the server', function(){
+      var callback = jasmine.createSpy();
       var html = "<div class=\"valid_from\">28.01.2011</div>";
 
       pigeons.existing = {'http://mpk.krakow.pl/timetables/2': {valid_from: '28.01.2011'}};
       pigeons.getTimetable('/timetables/2', callback);
-      pigeons.get.mostRecentCall.args[1]({ statusCode: 200 }, Sizzle(html), html);
+      pigeons.get.mostRecentCall.args[1](Sizzle(html), html, true);
 
       expect(pigeons.put).not.toHaveBeenCalled();
       expect(callback).toHaveBeenCalled();

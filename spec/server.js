@@ -10,10 +10,18 @@ exports.createServer = function(port, cb){
   return server;
 }
 
-exports.createGetResponse = function(text){
+exports.createResponse = function(text){
   return function(req, resp){
-    resp.writeHead(200, {'content-type':'text/plain'});
-    resp.write(text);
-    resp.end();
+    if(req.method == 'PUT'){
+      req.on('end', function () {
+        resp.writeHead(201, {'content-type':'application/json'});
+        resp.write(text);
+        resp.end();
+      })
+    } else {
+      resp.writeHead(200, {'content-type':'application/json'});
+      resp.write(text);
+      resp.end();
+    }
   }
 }

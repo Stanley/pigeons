@@ -1,13 +1,11 @@
 describe('logger', function(){
 
   var db = 'http://localhost:5984/test_pigeons';
-  var log = 'http://localhost:5984/test_logs';
 
   beforeEach(function(){
-    var rm_db, rm_log;
-    request({ method: 'DELETE', uri: db }, function(err){ rm_db = !err })
-    request({ method: 'DELETE', uri: log }, function(err){ rm_log = !err })
-    waitsFor(function(){return rm_db && rm_log }, 'clean', 500)
+    var removed;
+    request({ method: 'DELETE', uri: db }, function(){ removed = true });
+    waitsFor(function(){return removed }, 'clean', 500);
   });
 
   it('should log all visited pages', function(){
@@ -24,83 +22,73 @@ describe('logger', function(){
   });
 
   it('should log saved timetables', function(){
-    var pigeons = new Pigeons({ server: 'http://httpstat.us',
-                                     log: log,
-                                     db: db});
-    spyOn(pigeons, 'request').andCallThrough();
+    var pigeons = new Pigeons({ server: 'http://httpstat.us' });
+
+    spyOn(pigeons, 'logger');
     pigeons.getTimetable('/200');
 
-    waitsFor(function(){ return pigeons.request.argsForCall.length }, 'request', 1000);
+    waitsFor(function(){ return pigeons.logger.mostRecentCall.args }, 'request', 2000);
     runs(function(){
-      var log = pigeons.request.argsForCall[0][0].json
+      var log = pigeons.logger.mostRecentCall.args[0];
       expect(log.uri).toEqual('http://httpstat.us/200');
       expect(log.type).toEqual('Timetable');
     })
   });
 
-  it('should depricate updated timetables', function(){
-    var html = "<div class=\"valid_from\">14.03.2011</div>",
-        pigeons = new Pigeons({ server: 'http://httpstat.us',
-          log: log, 
-          db: db,
-          get: { valid_from: '.valid_from'}
-        });
-    spyOn(pigeons, 'parseTimetable').andReturn({ valid_from: '14.03.2011' });
-    spyOn(pigeons, 'logger').andCallThrough();
-    spyOn(pigeons, 'request').andCallThrough();
+  it('should deprecate not existing timetables', function(){
+    var deprecated, doc = { type: 'Timetable', valid_from: '13.03.2011', url: 'http://localhost:6000/timetables/1' };
+    var server = s.createServer(6000, function(){
+      pigeons = new Pigeons({ server: 'http://localhost:6000', home: '/', db: db},
+        function(){
+          request({ method: 'PUT', uri: db +'/foo', json: doc }, // create old timetable
+            function(){
+              pigeons.getAll(function(){ // should get all old timetables
+                request({ uri: db +'/foo' }, function(err, resp, body){
+                  server.close();
+                  deprecated = JSON.parse(body);
+                });
+              });
+            }
+          );
+        }
+      );
+    }).once('/', s.createResponse("<div>Witaj!</div>"))
 
-    request({ method: 'PUT', uri: 'http://localhost:5984/test_pigeons/foo', json: { valid_from: '13.03.2011' } })
-    pigeons.existing = {'http://httpstat.us/200': { valid_from: '13.03.2011', id: 'foo' }};
-    pigeons.getTimetable('/200');
-
-    waitsFor(function(){ return pigeons.logger.argsForCall.length == 2 }, 'request', 1000);
+    waitsFor(function(){ return deprecated }, 'request', 1000);
     runs(function(){
-      var timetable;
-      var log = pigeons.request.argsForCall[pigeons.request.argsForCall.length-1][0].json
-      expect(log.updates).toEqual('foo');
-
-      request({ method: 'GET', uri: 'http://localhost:5984/test_pigeons/foo' }, function(err, resp, body){
-        timetable = JSON.parse(body);
-      });
-      waitsFor(function(){ return timetable }, 'request', 1000);
-      runs(function(){
-        expect(timetable.valid_until).toEqual('14.03.2011');
-      })
+      var d = new Date(), month = d.getMonth()+1;
+      var today = d.getDate() +'.'+ (month > 9 ? month : '0'+month) +'.'+ d.getFullYear();
+      expect(deprecated.valid_until).toEqual(today);
     })
   });
+  
+  it('should deprecate outdated timetables (newer avaliable)', function(){
+    var deprecated, doc = { type: 'Timetable', valid_from: '13.03.2011', url: 'http://localhost:6000/timetables/1' };
+    var server = s.createServer(6000, function(){
+      pigeons = new Pigeons({ server: 'http://localhost:6000', home: '/',
+        db: db,
+        get: { lines: 'a', timetables: 'a', valid_from: '.valid_from' } },
+        function(){
+          request({ method: 'PUT', uri: db +'/foo', json: doc }, // create old timetable
+            function(){
+              pigeons.getAll(function(){ // should get all old timetables
+                request({ uri: db +'/foo' }, function(err, resp, body){
+                  server.close();
+                  deprecated = JSON.parse(body);
+                })
+              })
+            }
+          );
+        }
+      );
+    }).once('/', s.createResponse("<html><body><div><a href=\"/lines/1\">1</a></div></body></html>"))
+      .once('/lines/1', s.createResponse("<html><body><div><a href=\"/timetables/1\">1</a></div></body></html>"))
+      .once('/timetables/1', s.createResponse("<html><body><div class=\"valid_from\">14.03.2011</div></body></html>"));
 
-  it('should log old timetables removal', function(){
-    var saved;
-    var ready, pigeons = new Pigeons({ server: 'http://httpstat.us', home: '/200',
-                                      log: log,
-                                       db: db}, function(){
-      request({ method: 'PUT', uri: 'http://localhost:5984/test_pigeons/foo',
-                json: {type:'Timetable', uri:'http://httpstat.us/200'} }, function(err, resp, body){
-        saved = !err; 
-        pigeons.existing = {'http://httpstat.us/200': {id: 'foo', rev: JSON.parse(body).rev }}; 
-      });
-    });
-
-    waitsFor(function(){ return saved }, 'save', 1000);
+    waitsFor(function(){ return deprecated }, 'request', 1000);
     runs(function(){
-      pigeons.getAll(function(){ ready = true; });
-    });
-    spyOn(pigeons, 'logger');
-
-    waitsFor(function(){ return ready }, 'getAll', 1000)
-    runs(function(){
-      var statusCode;
-      request({ method: 'GET', uri: 'http://localhost:5984/test_pigeons/foo' }, function(err, resp, body){
-        statusCode = resp.statusCode;
-      });
-      waitsFor(function(){ return statusCode }, 1000)
-      runs(function(){
-        var log = pigeons.logger.argsForCall[0][0];
-        expect(statusCode).toEqual(404);
-        expect(log.doc).toEqual('foo');
-        expect(log.rev).toBeDefined();
-      })
-    });
+      expect(deprecated.valid_until).toEqual('14.03.2011');
+    })
   });
 
   describe('errors', function(){
@@ -122,17 +110,17 @@ describe('logger', function(){
       //})
     //});
 
-    it('should log failed requests', function(){
-      throw 'not implemented'
-    });
+    //it('should log failed requests', function(){
+      //throw 'not implemented'
+    //});
 
-    it('should log database errors', function(){
-      throw 'not implemented'
-    });
+    //it('should log database errors', function(){
+      //throw 'not implemented'
+    //});
 
-    it('should proceed despite errors', function(){
-      throw 'not implemented'
-    });
+    //it('should proceed despite errors', function(){
+      //throw 'not implemented'
+    //});
   });
 
   //it('should log to stdout if database does not exist', function(){

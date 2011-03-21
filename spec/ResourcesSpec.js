@@ -1,7 +1,7 @@
 describe('scanner', function(){
 
   it('should follow links to lines', function(){
-    var config = {get: {lines: ".Line"}};
+    var config = {db: 'http://httpstat.us/500', get: {lines: ".Line"}};
     var pigeons = new Pigeons(config);
     var body = "<a href=\"/lines/1\" class=\"Line\">1</a>" +
                "<a href=\"/lines/2\" class=\"Line\">2</a>" +
@@ -14,15 +14,19 @@ describe('scanner', function(){
 
     var callback = jasmine.createSpy();
     pigeons.getAll(callback);
-    pigeons.get.mostRecentCall.args[1]({}, Sizzle(body));
 
-    expect(callback).toHaveBeenCalled();
-    expect(pigeons.get).toHaveBeenCalled();
-    expect(pigeons.getLine.callCount).toEqual(3);
+    waitsFor(function(){ return pigeons.get.mostRecentCall.args });
+    runs(function(){
+      pigeons.get.mostRecentCall.args[1](Sizzle(body));
 
-    expect(pigeons.getLine.argsForCall[0][0]).toEqual('/lines/1');
-    expect(pigeons.getLine.argsForCall[1][0]).toEqual('/lines/2');
-    expect(pigeons.getLine.argsForCall[2][0]).toEqual('/lines/3');
+      expect(callback).toHaveBeenCalled();
+      expect(pigeons.get).toHaveBeenCalled();
+      expect(pigeons.getLine.callCount).toEqual(3);
+
+      expect(pigeons.getLine.argsForCall[0][0]).toEqual('/lines/1');
+      expect(pigeons.getLine.argsForCall[1][0]).toEqual('/lines/2');
+      expect(pigeons.getLine.argsForCall[2][0]).toEqual('/lines/3');
+    })
   });
 
   it('should follow links to opposite lines', function(){
@@ -42,7 +46,7 @@ describe('scanner', function(){
 
     var callback = jasmine.createSpy();
     pigeons.getLine('/lines/1', callback);
-    pigeons.get.mostRecentCall.args[1]({}, Sizzle(body));
+    pigeons.get.mostRecentCall.args[1](Sizzle(body));
 
     expect(callback).toHaveBeenCalled();
     expect(pigeons.get.callCount).toEqual(1);
@@ -66,7 +70,7 @@ describe('database adapter', function(){
     spyOn(pigeons, 'put');
 
     pigeons.getTimetable('/timetables/1')
-    pigeons.get.mostRecentCall.args[1]({ statusCode: 200 }, Sizzle(body), document);
+    pigeons.get.mostRecentCall.args[1](Sizzle(body), document, true);
 
     expect(pigeons.get).toHaveBeenCalled();
     expect(pigeons.put).toHaveBeenCalled();

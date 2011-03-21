@@ -5,8 +5,8 @@ describe('encoding', function(){
                               get: {context: 'div', days: '.day', hours: '.hour', minutes: '.min'},
                               server: 'http://localhost:6000', db: 'http://localhost:6001' });
 
-  s.createServer(6000, function(){ // Timetables source
-    s.createServer(6001, function(){ // Database
+  var source = s.createServer(6000, function(){ // Timetables source
+    var db = s.createServer(6001, function(){ // Database
       pigeons.getTimetable('/timetable/1');
     }).once('request', function(request, response){
       var r = '';
@@ -16,9 +16,11 @@ describe('encoding', function(){
         response.writeHead(200, {'content-type':'text/plain'});
         response.write('OK');
         response.end();
+        db.close();
+        source.close();
       });
     });
-  }).once('/timetable/1', s.createGetResponse(html));
+  }).once('/timetable/1', s.createResponse(html));
 
   beforeEach(function(){
     waitsFor(function(){ return post }, 500, 'response');

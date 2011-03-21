@@ -3,7 +3,7 @@ var Pigeons = require('pigeons').Client;
 describe('couchdb', function(){
 
   var request = require('request');
-  var database = 'http://localhost:5984/test_pigeons';
+  var database = 'http://localhost:5984/test_pigeons2';
 
   var db;
   request({method: 'DELETE', uri: database}, function(){
