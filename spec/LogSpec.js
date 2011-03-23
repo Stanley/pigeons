@@ -66,30 +66,44 @@ describe('logger', function(){
     });
   });
 
-  it('should deprecate not existing timetables', function(){
-    var deprecated, doc = { type: 'Timetable', valid_from: '13.03.2011', url: 'http://localhost:6000/timetables/1' };
+  it('should deprecate not existing timetables and log them', function(){
+    var deprecated, logged = [], doc = { type: 'Timetable', valid_from: '13.03.2011', url: 'http://localhost:6000/timetables/1' };
     var server = s.createServer(6000, function(){
       pigeons = new Pigeons({ server: 'http://localhost:6000', home: '/', db: db},
         function(){
-          request({ method: 'PUT', uri: db +'/foo', json: doc }, // create old timetable
-            function(){
-              pigeons.getAll(function(){ // should get all old timetables
-                request({ uri: db +'/foo' }, function(err, resp, body){
-                  server.close();
-                  deprecated = JSON.parse(body);
+          var logs = s.createServer(6003, function(){
+            pigeons.log = 'http://localhost:6003';
+            request({ method: 'PUT', uri: db +'/foo', json: doc }, // create old timetable
+              function(){
+                pigeons.getAll(function(){ // should get all old timetables
+                  request({ uri: db +'/foo' }, function(err, resp, body){
+                    server.close();
+                    logs.close();
+                    deprecated = JSON.parse(body);
+                  });
                 });
-              });
-            }
-          );
+              }
+            );
+          }).on('request', function(req, resp){
+            var buffer = '';
+            req.on('data', function(chunk){ buffer += chunk });
+            req.on('end', function(){
+              logged.push(JSON.parse(buffer));
+            });
+          });
         }
       );
     }).once('/', s.createResponse("<div>Witaj!</div>"))
 
-    waitsFor(function(){ return deprecated }, 'request', 1000);
+    waitsFor(function(){ return deprecated }, 'request', 2000);
     runs(function(){
       var d = new Date(), month = d.getMonth()+1;
       var today = d.getDate() +'.'+ (month > 9 ? month : '0'+month) +'.'+ d.getFullYear();
       expect(deprecated.valid_until).toEqual(today);
+
+      var log = logged[logged.length-1];
+      expect(log.type).toEqual('Deprication');
+      expect(log.urls).toEqual([ 'http://localhost:6000/timetables/1' ]);
     })
   });
   
