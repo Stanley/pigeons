@@ -10,7 +10,7 @@ exports.createServer = function(port, cb){
   return server;
 }
 
-exports.createResponse = function(text){
+exports.createResponse = function(text, statusCode){
   return function(req, resp){
     if(req.method == 'PUT'){
       req.on('end', function () {
@@ -19,7 +19,7 @@ exports.createResponse = function(text){
         resp.end();
       })
     } else {
-      resp.writeHead(200, {'content-type':'application/json'});
+      resp.writeHead(statusCode || 200, {'content-type':'application/json'});
       resp.write(text);
       resp.end();
     }

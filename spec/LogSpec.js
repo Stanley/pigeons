@@ -32,7 +32,38 @@ describe('logger', function(){
       var log = pigeons.logger.mostRecentCall.args[0];
       expect(log.uri).toEqual('http://httpstat.us/200');
       expect(log.type).toEqual('Timetable');
+      expect(log.headers).toBeDefined();
+      expect(log.statusCode).toEqual(200);
     })
+  });
+
+  it('should log times of source and db requests', function(){
+    var log, logs
+      , db = s.createServer(6001, function(){
+      logs = s.createServer(6002, function(){
+        new Pigeons({ server: 'http://httpstat.us' }, function(){
+          this.db = 'http://localhost:6001';
+          this.log = 'http://localhost:6002';
+          this.getTimetable('/200');
+        });
+      }).once('request', function(req, resp){
+        var buffer = '';
+        req.on('data', function(chunk){ buffer += chunk });
+        req.on('end', function(){
+          resp.end();
+          db.close();
+          logs.close();
+          log = JSON.parse(buffer);
+        });
+      });
+    }).once('request', s.createResponse(JSON.stringify({ ok: true, id: 'foo', rev: '1-bar' }), 201));
+
+    waitsFor(function(){ return log }, 1000, 'log');
+    runs(function(){
+      expect(log.response_time.remote).toBeDefined();
+      expect(log.response_time.db).toBeDefined();
+      expect(log.creates).toEqual('http://localhost:6001/foo?rev=1-bar');
+    });
   });
 
   it('should deprecate not existing timetables', function(){
@@ -92,6 +123,9 @@ describe('logger', function(){
   });
 
   describe('errors', function(){
+
+    it('should renew time out-ed request', function(){
+    });
 
     //it('should log server errors', function(){
       //var log, pigeons = new Pigeons({ server: 'http://httpstat.us',
