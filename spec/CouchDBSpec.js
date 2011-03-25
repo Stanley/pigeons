@@ -50,6 +50,11 @@ describe('couchdb', function(){
       expect(doc.foo).toEqual("bar");
     });
 
+    it('should add timetable type', function(){
+      expect(doc.type).toEqual('Timetable');
+      expect(doc.created_at).toBeDefined();
+    });
+
     it('should create timestamp', function(){
       expect(doc.created_at).toBeDefined();
     });
