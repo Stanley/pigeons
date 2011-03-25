@@ -136,6 +136,35 @@ describe('logger', function(){
     })
   });
 
+  it('should log requests of timetables which do not requre update', function(){
+    var log, server;
+    var pigeon = new Pigeons({ server: 'http://localhost:6000', get: { valid_from: 'div' }}, function(){
+      var logs = s.createServer(6002, function(){
+        pigeon.log = 'http://localhost:6002';
+        server = s.createServer(6000, function(){
+          pigeon.existing = {'http://localhost:6000/timetable/1': {valid_from: '25.03.2011'}}
+          pigeon.getTimetable('/timetable/1');
+        }).once('/timetable/1', s.createResponse('<html><body><div>25.03.2011</div></body></html>'))
+      }).once('/', function(req, resp){
+        var buffer = '';
+        req.on('data', function(chunk){ buffer += chunk });
+        req.on('end', function(){
+          resp.end();
+          server.close();
+          logs.close();
+          log = JSON.parse(buffer);
+        });
+      });
+    });
+    waitsFor(function(){ return log }, 1000, 'log');
+    runs(function(){
+      expect(log.uri).toEqual('http://localhost:6000/timetable/1');
+      expect(log.response_time.remote).toBeDefined();
+      expect(log.creates).toBeUndefined();
+      expect(log.updates).toBeUndefined();
+    })
+  });
+
   describe('errors', function(){
 
     it('should renew time out-ed request', function(){
