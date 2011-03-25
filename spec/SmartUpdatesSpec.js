@@ -63,7 +63,7 @@ describe('local cache check', function(){
 
       pigeons.existing = {'http://mpk.krakow.pl/timetables/1': {valid_from: '22.01.2011'}};
       pigeons.getTimetable('/timetables/1');
-      pigeons.get.mostRecentCall.args[1](Sizzle(html), html, true);
+      pigeons.get.mostRecentCall.args[1](Sizzle(html), undefined, html, true);
 
       expect(pigeons.put.mostRecentCall.args[0]).toEqual({
         valid_from: '28.01.2011',
@@ -80,7 +80,7 @@ describe('local cache check', function(){
 
       pigeons.existing = {'http://mpk.krakow.pl/timetables/2': {valid_from: '28.01.2011'}};
       pigeons.getTimetable('/timetables/2', callback);
-      pigeons.get.mostRecentCall.args[1](Sizzle(html), html, true);
+      pigeons.get.mostRecentCall.args[1](Sizzle(html), undefined, html, true);
 
       expect(pigeons.put).not.toHaveBeenCalled();
       expect(callback).toHaveBeenCalled();
