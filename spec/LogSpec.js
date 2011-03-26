@@ -42,7 +42,7 @@ describe('logger', function(){
       , db = s.createServer(6001, function(){
       logs = s.createServer(6002, function(){
         new Pigeons({ server: 'http://httpstat.us' }, function(){
-          this.db = 'http://localhost:6001';
+          this.db = 'http://user:password@localhost:6001';
           this.log = 'http://localhost:6002';
           this.getTimetable('/200');
         });

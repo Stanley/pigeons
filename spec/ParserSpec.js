@@ -117,7 +117,7 @@ describe('parser', function(){
     expect((new Pigeons(config)).parseTimetable(Sizzle(body)).valid_from).toEqual("20.01.2011");
   });
 
-  it('should find properties', function(){
+  it('should find and trim properties', function(){
     var config = {get: {route: ".Route",
                         destination: ".Destination",
                         stop: ".StopName",
@@ -125,8 +125,8 @@ describe('parser', function(){
     var pigeons = new Pigeons(config);
     var body = "<span class=\"Route\">START - Stop - META</span>"+
                "<span class=\"Destination\">Nibylandia</span>"+
-               "<span class=\"StopName\">Teatr Bagatela</span>"+
-               "<span class=\"LineNumber\">11</span>";
+               "<span class=\"StopName\">  Teatr Bagatela  </span>"+
+               "<span class=\"LineNumber\">11\n</span>";
     var timetable = pigeons.parseTimetable(Sizzle(body));
 
     expect(timetable).toEqual({ line: "11", stop: "Teatr Bagatela", route: "START - Stop - META" });
