@@ -10,7 +10,7 @@ describe('parser', function(){
       }
     };
 
-    it('should read tree vertically', function(){
+    it('should read DOM vertically', function(){
       var body = "                    \
         <div class='day'>first</div>  \
         <div class='day'>second</div> \
@@ -59,19 +59,24 @@ describe('parser', function(){
       })
     });
 
-    it('should read tree horizontally', function(){
+    it('should read DOM horizontally', function(){
       var body = "                    \
         <div class='day'>first</div>  \
+        <div class='hour'>3</div>     \
         <div class='hour'>4</div>     \
         <div class='minute'>01</div>  \
+        <div class='hour'>5</div>     \
         <div class='hour'>7</div>     \
         <div class='minute'>04</div>  \
         <div class='day'>second</div> \
         <div class='hour'>5</div>     \
         <div class='minute'>02</div>  \
+        <div class='hour'>7</div>     \
         <div class='hour'>8</div>     \
         <div class='minute'>05</div>  \
         <div class='day'>third</div>  \
+        <div class='hour'>4</div>     \
+        <div class='hour'>5</div>     \
         <div class='hour'>6</div>     \
         <div class='minute'>03</div>  \
         <div class='hour'>9</div>     \
