@@ -112,8 +112,10 @@
   },
   "updates":{
     "dump": "function(doc,req){
-      doc.valid_until = req.query.new_doc_since;
-      return [doc, \"ok\"];
+      if(doc){
+        doc.valid_until = req.query.new_doc_since;
+        return [doc, \"ok\"];
+      }
     }"
   }
 },
