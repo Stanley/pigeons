@@ -150,6 +150,17 @@ describe('parser', function(){
     expect(timetable).toEqual({ line: "11", stop: "Teatr Bagatela", route: "START - Stop - META" });
   });
 
+  it('should not throw on not found properties', function(){
+    var config = { get: { route: [".Route", "^Trasa: (.+)$"], stop: [".StopName", "^Przystanek: (.+)$"], line: ".LineNumber" }};
+    var pigeons = new Pigeons(config);
+    var body = "<span class=\"Route\"></span>"+
+               "<span class=\"StopName\">Przystanek: </span>"+
+               "<span class=\"LineNumber\"></span>";
+    var timetable = pigeons.parseTimetable(Sizzle(body));
+
+    expect(timetable).toEqual({});
+  });
+
   describe('destination property', function(){
 
     it('should be added if route path is not defined', function(){
