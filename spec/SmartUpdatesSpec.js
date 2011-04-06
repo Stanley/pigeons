@@ -7,16 +7,18 @@ describe('local cache check', function(){
   var uri = 'http://localhost:5984/test_logs';
   var db =  'http://localhost:5984/test_pigeons';
   request({method: 'DELETE', uri: uri}, function(error){
-    if(!error){
-      pigeons = new Pigeons({
-        log: uri, 
-        db: db,
-        get: { valid_from: '.valid_from'},
-        server: 'http://mpk.krakow.pl'
-      }, function(){
-        ready = true
-      });
-    }
+    request({method: 'PUT', uri: uri}, function(error){
+      if(!error){
+        pigeons = new Pigeons({
+          log: uri, 
+          db: db,
+          get: { valid_from: '.valid_from'},
+          server: 'http://mpk.krakow.pl'
+        }, function(){
+          ready = true
+        });
+      }
+    })
   });
 
   beforeEach(function(){
@@ -80,7 +82,7 @@ describe('local cache check', function(){
 
       pigeons.existing = {'http://mpk.krakow.pl/timetables/2': {valid_from: '28.01.2011'}};
       pigeons.getTimetable('/timetables/2', callback);
-      pigeons.get.mostRecentCall.args[1](Sizzle(html), undefined, html, true);
+      pigeons.get.mostRecentCall.args[1](Sizzle(html), {}, html, true);
 
       expect(pigeons.put).not.toHaveBeenCalled();
       expect(callback).toHaveBeenCalled();

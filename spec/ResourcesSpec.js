@@ -70,7 +70,7 @@ describe('database adapter', function(){
     spyOn(pigeons, 'put');
 
     pigeons.getTimetable('/timetables/1')
-    pigeons.get.mostRecentCall.args[1](Sizzle(body), document, true);
+    pigeons.get.mostRecentCall.args[1](Sizzle(body), undefined, document, true);
 
     expect(pigeons.get).toHaveBeenCalled();
     expect(pigeons.put).toHaveBeenCalled();
