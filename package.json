@@ -1,6 +1,6 @@
 {
   "name"        : "pigeons",
-  "version"     : "0.1.103",
+  "version"     : "0.1.104",
   "author"      : "Stanisław Wasiutyński <staszek.wasiutynski@gmail.com>",
   "description" : "i can haz timetables",
   "main"        : "lib/pigeons.js",
