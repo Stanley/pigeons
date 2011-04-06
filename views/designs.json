@@ -34,28 +34,6 @@
           }
           emit([parseInt(doc.line), route[2], pio], doc);
         }
-      }",
-      "reduce": "function(keys,values,rereduce){
-        function unique(a) {
-           var r = new Array();
-           o:for(var i = 0, n = a.length; i < n; i++) {
-              for(var x = 0, y = r.length; x < y; x++) {
-                 if(r[x]==a[i]) continue o;
-              }
-              r[r.length] = a[i];
-           }
-           return r;
-        }
-
-        if(rereduce){
-          return unique(values.map(function(val){
-              return unique(val)
-            }).reduce(function(a,b) {
-              return a.concat(b);
-            }, []))
-        } else {
-          return values.map(function(doc){return doc.route})
-        }
       }"
     },
     "by_source": {
