@@ -27,7 +27,7 @@ describe('local cache check', function(){
 
     var timetable;
     request({ method: 'POST', uri: db,
-              json: {type: 'Timetable', url: 'http://mpk.krakow.pl/timetables/1', valid_from: '21.01.2011' }}, function(){
+              json: {type: 'Timetable', source: 'http://mpk.krakow.pl/timetables/1', valid_from: '21.01.2011' }}, function(){
       timetable = true;
     });
 
@@ -67,7 +67,7 @@ describe('local cache check', function(){
 
       expect(pigeons.put.mostRecentCall.args[0]).toEqual({
         valid_from: '28.01.2011',
-        url: 'http://mpk.krakow.pl/timetables/1'
+        source: 'http://mpk.krakow.pl/timetables/1'
       });
       expect(pigeons.put.mostRecentCall.args[1]).toEqual(html);
       // TODO

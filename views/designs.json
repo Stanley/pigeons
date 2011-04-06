@@ -25,8 +25,8 @@
         if(doc.type==\"Timetable\"){
           var route = doc.route ? doc.route.split(\" - \") : [];
           var pio;
-          if(doc.url){
-            var split = doc.url ? doc.url.split(\"/\") : [];
+          if(doc.source){
+            var split = doc.source ? doc.source.split(\"/\") : [];
             var id = split[split.length-1];
             pio = parseInt(id.split(\".\")[0].split(\"t\")[1], 10);
           } else {
@@ -58,10 +58,10 @@
         }
       }"
     },
-    "by_url": {
+    "by_source": {
       "map": "function(doc) {
-        if(doc.type == \"Timetable\" && doc.url){
-          var split = doc.url.split(new RegExp(':\/\/|\/'));
+        if(doc.type == \"Timetable\" && doc.source){
+          var split = doc.source.split(new RegExp(':\/\/|\/'));
           emit([split[1], split[3], split[4]], doc);
         }
       }"
