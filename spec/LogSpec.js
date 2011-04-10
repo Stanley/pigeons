@@ -67,7 +67,10 @@ describe('logger', function(){
   });
 
   it('should deprecate not existing timetables and log them', function(){
-    var deprecated, logged = [], doc = { type: 'Timetable', valid_from: '13.03.2011', url: 'http://localhost:6000/timetables/1' };
+    var deprecated
+      , logged = []
+      , doc = { type: 'Timetable', valid_from: '13.03.2011', source: 'http://localhost:6000/timetables/1' }
+
     var server = s.createServer(6000, function(){
       pigeons = new Pigeons({ server: 'http://localhost:6000', home: '/', db: db},
         function(){
@@ -89,6 +92,9 @@ describe('logger', function(){
             req.on('data', function(chunk){ buffer += chunk });
             req.on('end', function(){
               logged.push(JSON.parse(buffer));
+              resp.writeHead(201, {'content-type':'application/json'});
+              resp.write(JSON.stringify({ok: true}));
+              resp.end();
             });
           });
         }
@@ -108,7 +114,7 @@ describe('logger', function(){
   });
   
   it('should deprecate outdated timetables (newer avaliable)', function(){
-    var deprecated, doc = { type: 'Timetable', valid_from: '13.03.2011', url: 'http://localhost:6000/timetables/1' };
+    var deprecated, doc = { type: 'Timetable', valid_from: '13.03.2011', source: 'http://localhost:6000/timetables/1' };
     var server = s.createServer(6000, function(){
       pigeons = new Pigeons({ server: 'http://localhost:6000', home: '/',
         db: db,
