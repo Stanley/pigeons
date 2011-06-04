@@ -93,7 +93,20 @@ describe('scanner', function(){
     pigeons.get.mostRecentCall.args[1](Sizzle(body));
 
     expect(pigeons.getTimetable.argsForCall[0][0]).toEqual('/bar/1');
-  })
+  });
+
+  it('should scan opposite line if specified', function(){
+    var config = {db: 'http://httpstat.us/500', get: {opposite: '.Opposite', timetables: '.Timetable'}}
+    var pigeons = new Pigeons(config);
+    var body = "<a href=\"/lines/B\" class=\"Opposite\">B</a>";
+
+    spyOn(pigeons, 'get');
+    pigeons.getLine('/lines/3', function(){});
+    spyOn(pigeons, 'getLine');
+    pigeons.get.mostRecentCall.args[1](Sizzle(body));
+
+    expect(pigeons.getLine.mostRecentCall.args[0]).toEqual('/lines/B');
+  });
 });
 
 describe('database adapter', function(){
