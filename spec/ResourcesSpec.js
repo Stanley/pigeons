@@ -33,7 +33,7 @@ describe('scanner', function(){
   });
 
   it('should follow links to timetables', function(){
-    var config = {get: {timetables: ".Timetable"}};
+    var config = {get: {timetables: '.Timetable'}};
     var pigeons = new Pigeons(config);
     var body = "<a href=\"/timetables/1\" class=\"Timetable\">1</a>" +
                "<a href=\"/timetables/2\" class=\"Timetable\">2</a>" +
@@ -56,6 +56,44 @@ describe('scanner', function(){
     expect(pigeons.getTimetable.argsForCall[1][0]).toEqual('/timetables/2');
     expect(pigeons.getTimetable.argsForCall[2][0]).toEqual('/timetables/3');
   });
+
+  it('should replace parts of links to timetables if required', function(){
+    var config = {db: 'http://httpstat.us/500', get: {lines: ['.Line', ['foo', 'bar']] }};
+    var pigeons = new Pigeons(config);
+    var body = "<a href=\"/foo/A\" class=\"Line\">A</a>";
+
+    spyOn(pigeons, 'get');
+    spyOn(pigeons, 'getLine').andCallFake(function(){
+      pigeons.getLine.mostRecentCall.args[1]();
+    });
+
+    var callback = jasmine.createSpy();
+    pigeons.getAll(callback);
+
+    waitsFor(function(){ return pigeons.get.mostRecentCall.args });
+    runs(function(){
+      pigeons.get.mostRecentCall.args[1](Sizzle(body));
+
+      expect(callback).toHaveBeenCalled();
+      expect(pigeons.getLine.argsForCall[0][0]).toEqual('/bar/A');
+    })
+  });
+
+  it('should replace parts of links to timetables if required', function(){
+    var config = {get: {timetables: ['.Timetable', ['foo', 'bar']] }};
+    var pigeons = new Pigeons(config);
+    var body = "<a href=\"/foo/1\" class=\"Timetable\">1</a>";
+
+    spyOn(pigeons, 'get');
+    spyOn(pigeons, 'getTimetable').andCallFake(function(){
+      pigeons.getTimetable.mostRecentCall.args[1]();
+    });
+
+    pigeons.getLine('/lines/2', function(){});
+    pigeons.get.mostRecentCall.args[1](Sizzle(body));
+
+    expect(pigeons.getTimetable.argsForCall[0][0]).toEqual('/bar/1');
+  })
 });
 
 describe('database adapter', function(){
