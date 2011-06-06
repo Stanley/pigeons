@@ -15,7 +15,7 @@ describe('status code 302', function(){
 
   it('should be ack', function(){
     this.pigeons.getTimetable('/timetables/1', this.callback);
-    this.pigeons.get.mostRecentCall.args[1]({statusCode: 302}, Sizzle(), "");
+    this.pigeons.get.mostRecentCall.args[1](undefined, {statusCode: 302}, "");
 
     expect(this.pigeons.parseTimetable).not.toHaveBeenCalled();
     expect(this.callback).toHaveBeenCalled()
