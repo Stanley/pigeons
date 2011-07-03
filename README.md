@@ -8,23 +8,10 @@ Features
 
 * Compatibility with every major public transport comapny's website in Poland.
 
-Requirements
-------------
-
-* node-iconv
-
 Installation
 ------------
 
     $ npm install pigeons
-
-or
-
-    $ git clone https://github.com/stanley/pigeons
-    $ cd pigeons
-    $ git submodule init
-    $ git submodule update
-    $ npm link .
 
 Testing
 -------
@@ -42,7 +29,7 @@ To gather data from custom source:
     var mpk = new Pigeons(config);
     mpk.getAll();
 
-Web interface is a couchapp. Works only if you enable logging to couchdb.
+There is a couchapp which displays logs. Works only if you enable logging to couchdb. To generate type:
 
     $ couchapp push couch/app.js http://localhost:5984/pigeons
 
@@ -51,16 +38,10 @@ CAUTION
 
 API will change until 1.0 is released.
 
-TODO
-----
-
-* Monitor, show progress.
-* Remove CouchDB dependency.
-
 Want some more?
 ---------------
 
-Check out [Bagatela](https://github.com/stanley/bagatela) - polish public transport RESTfull API.
+Check out [Bagatela](https://github.com/stanley/bagatela) - Polish public transport RESTfull API.
 
 License
 -------
