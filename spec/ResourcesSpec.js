@@ -1,7 +1,22 @@
 describe('scanner', function(){
 
+  var server, db, logs;
+  beforeEach(function(){
+    server = s.createServer(6000, function(){
+      db = s.createServer(6001, function(){
+        logs = s.createServer(6002, function(){});
+      }).once('/_design/Timetable/_view/active', s.createResponse('{"rows":[]}'));
+    });
+    waitsFor(function(){return server && db && logs})
+  });
+
+  afterEach(function(){
+    server.close(); db.close(); logs.close();
+    server = db = logs = undefined;
+  });
+
   it('should follow links to lines', function(){
-    var config = {db: 'http://httpstat.us/500', get: {lines: ".Line"}};
+    var config = {db: 'http://localhost:6001', get: {lines: ".Line"}};
     var pigeons = new Pigeons(config);
     var body = "<a href=\"/lines/1\" class=\"Line\">1</a>" +
                "<a href=\"/lines/2\" class=\"Line\">2</a>" +
@@ -15,7 +30,7 @@ describe('scanner', function(){
     var callback = jasmine.createSpy();
     pigeons.getAll(callback);
 
-    waitsFor(function(){ return pigeons.get.mostRecentCall.args });
+    waitsFor(function(){ return pigeons.get.mostRecentCall.args }, 1000);
     runs(function(){
       pigeons.get.mostRecentCall.args[1](Sizzle(body));
 
@@ -57,25 +72,25 @@ describe('scanner', function(){
     expect(pigeons.getTimetable.argsForCall[2][0]).toEqual('/timetables/3');
   });
 
-  it('should replace parts of links to timetables if required', function(){
-    var config = {db: 'http://httpstat.us/500', get: {lines: ['.Line', ['foo', 'bar']] }};
+  it('should replace parts of links to lines if required', function(){
+    var request;
+    var config = {
+      server: 'http://localhost:6000', home: '/',
+      db: 'http://localhost:6001',
+      get: {lines: ['.Line', ['foo', 'bar']] }};
     var pigeons = new Pigeons(config);
     var body = "<a href=\"/foo/A\" class=\"Line\">A</a>";
 
-    spyOn(pigeons, 'get');
-    spyOn(pigeons, 'getLine').andCallFake(function(){
-      pigeons.getLine.mostRecentCall.args[1]();
+    server.once('/', function(req, resp){
+      server.once('request', function(req){ request = req })
+      return s.createResponse(CreateDocument(body))(req, resp)
     });
 
-    var callback = jasmine.createSpy();
-    pigeons.getAll(callback);
+    pigeons.getAll();
 
-    waitsFor(function(){ return pigeons.get.mostRecentCall.args });
+    waitsFor(function(){ return request }, 1000);
     runs(function(){
-      pigeons.get.mostRecentCall.args[1](Sizzle(body));
-
-      expect(callback).toHaveBeenCalled();
-      expect(pigeons.getLine.argsForCall[0][0]).toEqual('/bar/A');
+      expect(request.url).toEqual('/bar/A');
     })
   });
 
@@ -96,16 +111,28 @@ describe('scanner', function(){
   });
 
   it('should scan opposite line if specified', function(){
-    var config = {db: 'http://httpstat.us/500', get: {opposite: '.Opposite', timetables: '.Timetable'}}
+    var config = {db: 'http://localhost:6001', get: {opposite: '.Opposite', timetables: '.Timetable'}}
     var pigeons = new Pigeons(config);
     var body = "<a href=\"/lines/B\" class=\"Opposite\">B</a>";
 
     spyOn(pigeons, 'get');
     pigeons.getLine('/lines/3', function(){});
-    spyOn(pigeons, 'getLine');
     pigeons.get.mostRecentCall.args[1](Sizzle(body));
 
-    expect(pigeons.getLine.mostRecentCall.args[0]).toEqual('/lines/B');
+    expect(pigeons.get.mostRecentCall.args[0]).toEqual('/lines/B');
+  });
+
+  it('should replace links to opposite lines the same way links to lines are', function(){
+    var config = {db: 'http://localhost:6001', 
+                  get: {lines: ['.Line', ['foo', 'bar']], opposite: '.Opposite', timetables: '.Timetable'}}
+    var pigeons = new Pigeons(config);
+    var body = "<a href=\"/foo/C\" class=\"Opposite\">B</a>";
+
+    spyOn(pigeons, 'get');
+    pigeons.getLine('/lines/4', function(){});
+    pigeons.get.mostRecentCall.args[1](Sizzle(body));
+
+    expect(pigeons.get.mostRecentCall.args[0]).toEqual('/bar/C');
   });
 });
 
