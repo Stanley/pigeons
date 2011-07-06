@@ -100,6 +100,19 @@ $.couch.app(function(app){
   var select = $('#city');
   var past = $('#past');
   var div = $('#past');
+
+  app.view('new_timetables', {
+    group_level: 1,
+    success: function(json){
+      json.rows.forEach(function(row){
+        var source = row.key[0];
+        var option = document.createElement('option');
+        option.value = option.text = source;
+        select.append(option);
+      });
+      select.trigger('change');
+    }
+  })
   
   select.change(function(){
     var db = $(this).val()
@@ -190,5 +203,4 @@ $.couch.app(function(app){
       }
     })
   })
-  select.trigger('change');
 })

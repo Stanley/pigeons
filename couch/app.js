@@ -8,8 +8,9 @@ ddoc = {
 
 ddoc.views.runs = {
   map: function(doc) {
+    var source = doc.uri.match(/^http\:\/\/([^\/]+[a-z])\//)[1]
     if(doc.type == 'Home')
-      emit([doc.db, doc.created_at], doc.items) 
+      emit([source, doc.created_at], doc.items) 
   }
 }
 
@@ -28,13 +29,15 @@ ddoc.views.runs = {
 
 ddoc.views['recent_items'] = {
   map: function(doc){
-    emit([doc.db, doc.created_at], doc.response_time);
+    var source = doc.uri.match(/^http\:\/\/([^\/]+[a-z])\//)[1]
+    emit([source, doc.created_at], doc.response_time);
   }
 }
 
 ddoc.views['status_code'] = {
   map: function(doc) {
-    if(doc.statusCode) emit([doc.db, doc.created_at], doc.statusCode);
+    var source = doc.uri.match(/^http\:\/\/([^\/]+[a-z])\//)[1]
+    if(doc.statusCode) emit([source, doc.created_at], doc.statusCode);
   },
   reduce: function (key, values, rereduce) {
     var map = {}
@@ -57,8 +60,10 @@ ddoc.views['status_code'] = {
 
 ddoc.views['lines'] = {
   map: function(doc) {
-    if(doc.type == 'Line')
-      emit([doc.db, doc.created_at], null);
+    if(doc.type == 'Line'){
+      var source = doc.uri.match(/^http\:\/\/([^\/]+[a-z])\//)[1]
+      emit([source, doc.created_at], null);
+    }
   },
   reduce: function (key, values, rereduce) {
     if(rereduce) return sum(values);
@@ -68,12 +73,14 @@ ddoc.views['lines'] = {
 
 ddoc.views['timetables'] = {
   map: function(doc) {
-    if(doc.type == 'Timetable')
-      emit([doc.db, doc.created_at], {
+    if(doc.type == 'Timetable'){
+      var source = doc.uri.match(/^http\:\/\/([^\/]+[a-z])\//)[1]
+      emit([source, doc.created_at], {
         id: doc.doc, 
         valid_from: doc.valid_from,
         etag: doc.headers.etag
       });
+    }
   },
   reduce: function (key, values, rereduce) {
     if(rereduce) return sum(values);
@@ -83,8 +90,10 @@ ddoc.views['timetables'] = {
 
 ddoc.views['new_timetables'] = {
   map: function(doc) {
-    if(doc.type == 'Timetable' && (doc.creates || doc.updates))
-      emit([doc.db, doc.created_at], null);
+    if(doc.type == 'Timetable' && (doc.creates || doc.updates)){
+      var source = doc.uri.match(/^http\:\/\/([^\/]+[a-z])\//)[1]
+      emit([source, doc.created_at], null);
+    }
   },
   reduce: function (key, values, rereduce) {
     if(rereduce) return sum(values);
