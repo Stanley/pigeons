@@ -5,9 +5,9 @@ describe('local cache check', function(){
 
   var server, db, logs;
   beforeEach(function(){
-    server = s.createServer(6000, function(){
-      db = s.createServer(6001, function(){
-        logs = s.createServer(6002, function(){});
+    server = s.createServer(5000, function(){
+      db = s.createServer(5001, function(){
+        logs = s.createServer(5002, function(){});
       });
     });
     waitsFor(function(){return server && db && logs})
@@ -18,55 +18,70 @@ describe('local cache check', function(){
     server = db = logs = undefined;
   });
 
-  it('should retrieve all recent timetables', function(){
+  it('should retrieve and remember all recent timetables', function(){
 
-    var pigeons, updated;
-    pigeons = new Pigeons({
-      server: 'http://localhost:6000',
-      home  : '/',
-    }, function(){
-      this.db = 'http://localhost:6001';
-      this.getAll();
+    var pigeons, finished;
+    pigeons = new Pigeons({server:'http://localhost:5000', home:'/'}, function(){
+      this.log = 'http://localhost:5002';
     });
+    spyOn(pigeons, 'logger').andCallFake(function(){ finished = true });
 
-    db.once('/_design/Timetable/_view/active', s.createResponse(JSON.stringify({rows: [
-        { value: { _id: 'foo', type: 'Timetable', source: 'http://mpk.krakow.pl/timetables/1', valid_from: '21.01.2011' }}
-      ]})));
-    db.once('/_design/Timetable/_update/dump/foo?new_doc_since=null', function(req, resp){
-      updated = true;
-    });
+    // Return etags of most recent request to timetables which haven't expired in the database
+    logs.once('request',
+      s.createResponse(JSON.stringify({rows:[
+        {key:['http://mpk.krakow.pl/timetables/1'], value:{etag:'foo'}}
+      ]}))
+    );
     server.once('/', s.createResponse(CreateDocument()));
+    
+    pigeons.getAll();
 
-    waitsFor(function(){return updated}, 'logs', 200);
+    waitsFor(function(){return finished}, 'logs', 200);
     runs(function(){
-      expect(pigeons.existing['http://mpk.krakow.pl/timetables/1']).toBeDefined();
-      expect(pigeons.existing['http://mpk.krakow.pl/timetables/1'].valid_from).toEqual('21.01.2011')
-    })
+      expect(pigeons.existing['http://mpk.krakow.pl/timetables/1']).toEqual({etag:'foo'})
+    });
   });
 
   describe('valid_from', function(){
 
-    // TODO
-    it('should result in timetable update when outdated');
-
-    it('should not result in timetable update that was not changed on the server', function(){
-
-      var finish, callback = jasmine.createSpy();
-      var html = "<div class=\"valid_from\">28.01.2011</div>";
-      var pigeons = new Pigeons({ server: 'http://localhost:6000', get: { valid_from: '.valid_from' }});
-
-      spyOn(pigeons, 'put');
-      server.once('/timetables/2', function(req,resp){
-        finish = true; s.createResponse(CreateDocument(html))(req,resp)
+    it('should update valid_until field when outdated', function(){
+      var request;
+      new Pigeons({server:'http://localhost:5000', home:'/'}, function(){
+        this.db = 'http://localhost:5001';
+        this.existing = {'http://example.com/timetable/1':{ id:'foo' }}
+        this.getAll();
       });
 
-      pigeons.existing = {'http://localhost:6000/timetables/2': {valid_from: '28.01.2011'}};
-      pigeons.getTimetable('/timetables/2', callback);
-
-      waitsFor(function(){ return finish });
+      server.once('/', s.createResponse(''));
+      db.once('request', function(req,resp){
+        request = req;
+      });
+      
+      waitsFor(function(){ return request }, 500, 'update');
       runs(function(){
-        expect(pigeons.put).not.toHaveBeenCalled();
-        expect(callback).toHaveBeenCalled();
+        expect(request.url).toEqual('/_design/Timetable/_update/dump/foo');
+      })
+    });
+
+    //it('should not result in timetable update that was not changed on the server', function(){
+    it('should generate timetables\'s ids based on source and valid_from fields', function(){
+
+      var ready, source = 'http://example.com/timetable.html', requests = [];
+      var first_doc = {source:source, updated_at:'2011-07-01', valid_from:'2011-01-01'}
+      var second_doc = {source:source, updated_at:'2011-07-05', valid_from:'2011-01-01'}
+
+      db.on('request', function(req,resp){
+        requests.push(req.url)
+        return s.createResponse("conflict", 409)(req,resp)
+      });
+
+      var pigeons = new Pigeons({db: 'http://localhost:5001'});
+      pigeons.put(first_doc, '');
+      pigeons.put(second_doc, '', function(){ ready = true });
+
+      waitsFor(function(){ return ready }, 500, 'two responses');
+      runs(function(){
+        expect(requests[0]).toEqual(requests[1]);
       });
     });
   });

@@ -8,7 +8,7 @@
     "request"     : "1.9.5",
     "jsdom"       : "0.2.0",
     "couchapp"    : "0.8.0",
-    "node-uuid"   : "1.1.0",
+    "hashlib"     : "1.0.0",
     "buffertools" : "1.0.3",
     "async"       : "0.1.9"
   },

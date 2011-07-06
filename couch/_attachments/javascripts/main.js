@@ -138,7 +138,7 @@ $.couch.app(function(app){
                  return false
                }
              };
-             app.view('recent-items', $.extend(opts, keys));
+             app.view('recent_items', $.extend(opts, keys));
 
              // Date
              var days = ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"];
@@ -147,7 +147,7 @@ $.couch.app(function(app){
              $('#deleted_timetables').text(day.removes ? day.removes.length : 0);
 
              // Errors table
-             app.view('status-code', $.extend({
+             app.view('status_code', $.extend({
                group: false,
                success: function(result){
                  $('#status').find('tr:not(:has(th))').remove();
@@ -169,7 +169,7 @@ $.couch.app(function(app){
              }, keys));
 
              //New timetables
-             app.view('new-timetables', $.extend({
+             app.view('new_timetables', $.extend({
                group: false,
                success: function(result){
                  $('#new_timetables').text(result.rows.length ? result.rows[0].value : 0)

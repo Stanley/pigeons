@@ -26,13 +26,13 @@ ddoc.views.runs = {
   //}
 //}
 
-ddoc.views['recent-items'] = {
+ddoc.views['recent_items'] = {
   map: function(doc){
     emit([doc.db, doc.created_at], doc.response_time);
   }
 }
 
-ddoc.views['status-code'] = {
+ddoc.views['status_code'] = {
   map: function(doc) {
     if(doc.statusCode) emit([doc.db, doc.created_at], doc.statusCode);
   },
@@ -81,7 +81,7 @@ ddoc.views['timetables'] = {
   }
 }
 
-ddoc.views['new-timetables'] = {
+ddoc.views['new_timetables'] = {
   map: function(doc) {
     if(doc.type == 'Timetable' && (doc.creates || doc.updates))
       emit([doc.db, doc.created_at], null);
@@ -89,6 +89,25 @@ ddoc.views['new-timetables'] = {
   reduce: function (key, values, rereduce) {
     if(rereduce) return sum(values);
     else return values.length
+  }
+}
+
+ddoc.views['recent_timetables'] = {
+  map: function(doc){
+    if(doc.type && doc.type == 'Timetable'){
+      var uri = doc.uri.match(/(http\:\/\/[^\/]+[a-z])(\/.+$)/).slice(1,3)
+      emit(uri.concat(doc.created_at), doc.headers.etag)
+    } else if(doc.type && doc.type == 'Outdated'){
+      doc.uris.forEach(function(uri){
+        var uri = uri.match(/(http\:\/\/[^\/]+[a-z])(\/.+$)/).slice(1,3)
+        emit(uri.concat([doc.created_at, doc.type]))
+      })
+    }
+  },
+  reduce: function(keys, values, rereduce){
+    pairs = keys.map(function(key,i){ return [key[0][2], {etag:values[i], type:key[0][3]}] });
+    var latest = pairs.sort()[pairs.length-1][1];
+    return latest;
   }
 }
 

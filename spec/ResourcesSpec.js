@@ -76,7 +76,6 @@ describe('scanner', function(){
     var request;
     var config = {
       server: 'http://localhost:6000', home: '/',
-      db: 'http://localhost:6001',
       get: {lines: ['.Line', ['foo', 'bar']] }};
     var pigeons = new Pigeons(config);
     var body = "<a href=\"/foo/A\" class=\"Line\">A</a>";
