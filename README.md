@@ -6,7 +6,7 @@ Pigeons are flying (web)rats which live in every major city. Their job is to wat
 Features
 --------
 
-* Compatibility with every major public transport comapny's website in Poland.
+* Compatibility with every major public transport company's website in Poland.
 
 Installation
 ------------
