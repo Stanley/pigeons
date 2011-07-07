@@ -146,6 +146,28 @@ describe('parser', function(){
         first: {6: ['02','03'], 7:['04']}
       });
     });
+
+    it('should return to default values after each table', function(){ 
+      var body = "                    \
+        <div class='day'>first</div>  \
+        <div class='hour'>3</div>     \
+        <div class='hour'>4</div>     \
+        <div class='minute'>01</div>  \
+        <div class='hour'>5</div>     \
+        <div class='hour'>6</div>     \
+        <div class='day'>second</div> \
+        <div class='hour'>3</div>     \
+        <div class='minute'>02</div>  \
+        <div class='hour'>4</div>     \
+        <div class='hour'>5</div>     \
+        <div class='minute'>05</div>  \
+        ";
+
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body)).table).toEqual({
+        first:  {4: ['01']},
+        second: {3: ['02'], 5: ['05']}
+      })
+    });
   });
 
   it('should read the time from when it is valid', function(){
