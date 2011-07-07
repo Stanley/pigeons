@@ -113,6 +113,39 @@ describe('parser', function(){
         third:  {6: ['03'], 9: ['06']}
       });
     });
+
+    it('should read rows and not confuse with collumns', function(){
+      var body1 = "                   \
+        <div class='day'>first</div>  \
+        <div class='hour'>4</div>     \
+        <div class='hour'>5</div>     \
+        <div class='minute'>02</div>  \
+        <div class='minute'>03</div>  \
+        <div class='hour'>6</div>     \
+        <div class='minute'>04</div>  \
+        <div class='hour'>7</div>     \
+        ";
+      
+      var body2 = "                   \
+        <div class='day'>first</div>  \
+        <div class='hour'>4</div>     \
+        <div class='hour'>5</div>     \
+        <div class='hour'>6</div>     \
+        <div class='minute'>02</div>  \
+        <div class='minute'>03</div>  \
+        <div class='hour'>7</div>     \
+        <div class='minute'>04</div>  \
+        <div class='hour'>8</div>     \
+        ";
+
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body1)).table).toEqual({
+        first: {5: ['02','03'], 6:['04']}
+      });
+
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body2)).table).toEqual({
+        first: {6: ['02','03'], 7:['04']}
+      });
+    });
   });
 
   it('should read the time from when it is valid', function(){
