@@ -5,7 +5,7 @@
   "description" : "i can haz timetables",
   "main"        : "lib/pigeons.js",
   "dependencies": {
-    "request"     : "1.9.5",
+    "request"     : "1.9.8",
     "jsdom"       : "0.2.0",
     "couchapp"    : "0.8.0",
     "hashlib"     : "1.0.0",
