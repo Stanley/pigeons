@@ -78,7 +78,7 @@ describe('scanner', function(){
       server: 'http://localhost:6000', home: '/',
       get: {lines: ['.Line', ['foo', 'bar']] }};
     var pigeons = new Pigeons(config);
-    var body = "<a href=\"/foo/A\" class=\"Line\">A</a>";
+    var body = "<a href=\"http://localhost:6000/foo/A\" class=\"Line\">A</a>";
 
     server.once('/', function(req, resp){
       server.once('request', function(req){ request = req })
@@ -147,7 +147,7 @@ describe('database adapter', function(){
     spyOn(pigeons, 'put');
 
     pigeons.getTimetable('/timetables/1')
-    pigeons.get.mostRecentCall.args[1](Sizzle(body), undefined, document, true);
+    pigeons.get.mostRecentCall.args[1](Sizzle(body), {}, document);
 
     expect(pigeons.get).toHaveBeenCalled();
     expect(pigeons.put).toHaveBeenCalled();
