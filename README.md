@@ -24,24 +24,31 @@ Usage
 To gather data from custom source:
 
     var Pigeons = require('pigeons').Client,
-        config = { ... }; // See https://github.com/Stanley/pigeons/wiki for details
+        config = { ... }; // See Configuration section below
 
     var mpk = new Pigeons(config);
     mpk.getAll();
 
-There is a couchapp which displays logs. Works only if you enable logging to couchdb. To generate type:
+There is also a couchapp which displays logs. Works only if you enable logging to couchdb. To generate couchapp type:
 
     $ couchapp push couch/app.js http://localhost:5984/pigeons
+
+Since it uses couchapp module, you might have to install it (`npm install couchapp`).
+
+Configuration
+-------------
+
+In order to read any type of timetables from almost any source, you need to provide a few lines of configuration. That is CSS selectors of some key elements on pages we will traverse. Visit <https://gist.github.com/887597> to see some examples.
 
 CAUTION
 -------
 
-API will change until 1.0 is released.
+API might change in the future.
 
 Want some more?
 ---------------
 
-Check out [Bagatela](https://github.com/stanley/bagatela) - Polish public transport RESTfull API.
+Check out [Bagatela](https://github.com/stanley/bagatela) - Polish public transport RESTful search API.
 
 License
 -------
