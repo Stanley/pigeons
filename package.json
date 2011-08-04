@@ -10,7 +10,8 @@
     "couchapp"    : "0.8.0",
     "hashlib"     : "1.0.0",
     "buffertools" : "1.0.3",
-    "async"       : "0.1.9"
+    "async"       : "0.1.9",
+    "iconv"       : "1.1.2"
   },
   "repository"  : { 
     "type" : "git",

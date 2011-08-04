@@ -1,14 +1,14 @@
-require.paths.push('./lib');
-
-s = require('./server');
 request = require('request');
 Jsdom = require('jsdom');
-Pigeons = require('pigeons.js').Client;
 Iconv = require('iconv').Iconv;
-console.log = function(){}
 
-var NodeSizzle = require('node-sizzle.js').Sizzle;
+s = require('./server');
+Pigeons = require('./../lib/pigeons.js');
+
+var NodeSizzle = require('./../lib/node-sizzle.js').Sizzle;
 var sizzle = new NodeSizzle();
+
+console.log = function(){}
 
 CreateDocument = function(body){
   return '<html><head></head><body>'+ body +'</body></html>';

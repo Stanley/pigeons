@@ -1,5 +1,3 @@
-var Pigeons = require('pigeons').Client;
-
 describe('couchdb', function(){
 
   var request = require('request');

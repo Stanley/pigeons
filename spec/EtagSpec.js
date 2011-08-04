@@ -1,5 +1,3 @@
-var Pigeons = require('pigeons').Client;
-
 beforeEach(function(){
   var done;
   this.callback = jasmine.createSpy();

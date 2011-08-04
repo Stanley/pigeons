@@ -23,7 +23,7 @@ Usage
 
 To gather data from custom source:
 
-    var Pigeons = require('pigeons').Client,
+    var Pigeons = require('pigeons'),
         config = { ... }; // See Configuration section below
 
     var mpk = new Pigeons(config);

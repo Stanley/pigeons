@@ -1,5 +1,4 @@
-var Pigeons = require('pigeons').Client
-  , request = require('request')
+var request = require('request')
 
 describe('local cache check', function(){
 
