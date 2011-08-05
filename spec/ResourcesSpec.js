@@ -151,7 +151,7 @@ describe('database adapter', function(){
 
     expect(pigeons.get).toHaveBeenCalled();
     expect(pigeons.put).toHaveBeenCalled();
-    expect(pigeons.put.mostRecentCall.args[0].table).toEqual({"Dni słoneczne": {"12": ["00"]}});
+    expect(pigeons.put.mostRecentCall.args[0].tables).toEqual({"Dni słoneczne": {"12": ["00"]}});
     expect(pigeons.put.mostRecentCall.args[1]).toEqual(document);
   });
 });

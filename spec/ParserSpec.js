@@ -52,7 +52,7 @@ describe('parser', function(){
         <div class='hour'>9</div>     \
         <div class='minute'>06</div>";
 
-      expect((new Pigeons(config)).parseTimetable(Sizzle(body)).table).toEqual({
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body)).tables).toEqual({
         first:  {4: ['01'], 7: ['04']},
         second: {5: ['02'], 8: ['05']},
         third:  {6: ['03'], 9: ['06']}
@@ -82,7 +82,7 @@ describe('parser', function(){
         <div class='hour'>9</div>     \
         <div class='minute'>06</div>";
 
-      expect((new Pigeons(config)).parseTimetable(Sizzle(body)).table).toEqual({
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body)).tables).toEqual({
         first:  {4: ['01'], 7: ['04']},
         second: {5: ['02'], 8: ['05']},
         third:  {6: ['03'], 9: ['06']}
@@ -107,7 +107,7 @@ describe('parser', function(){
         <div class='minute'>03</div>  \
         <div class='minute'>06</div>";
 
-      expect((new Pigeons(config)).parseTimetable(Sizzle(body)).table).toEqual({
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body)).tables).toEqual({
         first:  {4: ['01'], 7: ['04']},
         second: {5: ['02'], 8: ['05']},
         third:  {6: ['03'], 9: ['06']}
@@ -138,11 +138,11 @@ describe('parser', function(){
         <div class='hour'>8</div>     \
         ";
 
-      expect((new Pigeons(config)).parseTimetable(Sizzle(body1)).table).toEqual({
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body1)).tables).toEqual({
         first: {5: ['02','03'], 6:['04']}
       });
 
-      expect((new Pigeons(config)).parseTimetable(Sizzle(body2)).table).toEqual({
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body2)).tables).toEqual({
         first: {6: ['02','03'], 7:['04']}
       });
     });
@@ -163,7 +163,7 @@ describe('parser', function(){
         <div class='minute'>05</div>  \
         ";
 
-      expect((new Pigeons(config)).parseTimetable(Sizzle(body)).table).toEqual({
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body)).tables).toEqual({
         first:  {4: ['01']},
         second: {3: ['02'], 5: ['05']}
       })
