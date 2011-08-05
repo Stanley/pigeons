@@ -21,9 +21,6 @@ describe('Remote server', function(){
   })
 
   it('timeouts', function(){
-    server.once('/', function(){
-      // TODO
-    });
   });
 
   it('fails', function(){
@@ -35,12 +32,11 @@ describe('Remote server', function(){
 
     var finished;
     var pigeons = new Pigeons({ server: 'http://localhost:6000' });
-    pigeons.get('/', function($, log, body, ok){
+    pigeons.get('/', function($, log, body){
       expect($).toBeUndefined();
       expect(body.toString()).toEqual('{"error":"Bad Request"}');
-      expect(ok).toBeFalsy();
       finished = true;
     });
-    waitsFor(function(){ return finished });
+    waitsFor(function(){ return finished }, 100, 'callback');
   });
 });

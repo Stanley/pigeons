@@ -197,7 +197,37 @@ describe('logger', function(){
 
   describe('errors', function(){
 
-    it('should renew time out-ed request', function(){
+    it('should log timeouted request', function(){
+      var log, count = 0;
+      server.on('/', function(req, resp){
+        count += 1;
+        resp.writeHead(200, {'content-type':'application/json'});
+        resp.write("foo");
+        setTimeout(function(){
+          resp.end();
+        }, count == 1 ? 1100 : 0); // Given timeout is 1s
+      });
+
+      logs.once('/', function(req, resp){
+        var buffer = '';
+        req.on('data', function(chunk){ buffer += chunk });
+        req.on('end', function(){
+          log = JSON.parse(buffer);
+        });
+      });
+
+      var finished;
+      var pigeons = new Pigeons({server:'http://localhost:4000'}, function(){ 
+        this.log = 'http://localhost:4002';
+        this.get('/', function($, log, body){
+          expect(body.toString()).toEqual("foo")
+        })
+      });
+
+      waitsFor(function(){ return log }, 1500, 'callback');
+      runs(function(){
+        expect(log.response_time.remote).toBeGreaterThan(1000)
+      })
     });
 
     //it('should log server errors', function(){
