@@ -125,7 +125,7 @@ describe('parser', function(){
         <div class='minute'>04</div>  \
         <div class='hour'>7</div>     \
         ";
-      
+
       var body2 = "                   \
         <div class='day'>first</div>  \
         <div class='hour'>4</div>     \
@@ -138,12 +138,28 @@ describe('parser', function(){
         <div class='hour'>8</div>     \
         ";
 
+      var body3 = "                   \
+        <div class='day'>first</div>  \
+        <div class='hour'>4</div>     \
+        <div class='minute'>02</div>  \
+        <div class='minute'>03</div>  \
+        <div class='hour'>5</div>     \
+        <div class='hour'>6</div>     \
+        <div class='hour'>7</div>     \
+        <div class='minute'>04</div>  \
+        <div class='minute'>05</div>  \
+      ";
+
       expect((new Pigeons(config)).parseTimetable(Sizzle(body1)).tables).toEqual({
         first: {5: ['02','03'], 6:['04']}
       });
 
       expect((new Pigeons(config)).parseTimetable(Sizzle(body2)).tables).toEqual({
         first: {6: ['02','03'], 7:['04']}
+      });
+
+      expect((new Pigeons(config)).parseTimetable(Sizzle(body3)).tables).toEqual({
+        first: {4: ['02','03'], 7:['04','05']}
       });
     });
 
