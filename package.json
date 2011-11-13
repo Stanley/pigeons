@@ -1,6 +1,6 @@
 {
   "name"        : "pigeons",
-  "version"     : "0.2.4",
+  "version"     : "0.2.5",
   "author"      : "Stanisław Wasiutyński <staszek.wasiutynski@gmail.com>",
   "description" : "i can haz timetables",
   "main"        : "lib/pigeons.js",
@@ -8,8 +8,8 @@
     "request"     : "1.9.8",
     "jsdom"       : "0.2.0",
     "couchapp"    : "0.8.0",
-    "hashlib"     : "1.0.0",
-    "buffertools" : "1.0.3",
+    "hashlib"     : "1.0.1",
+    "buffertools" : "1.0.5",
     "async"       : "0.1.9",
     "iconv"       : "1.1.2"
   },
