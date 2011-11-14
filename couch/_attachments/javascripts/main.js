@@ -126,7 +126,7 @@ $.couch.app(function(app){
           var start = day.key[1]
           var date = new Date(start);
           var link = $('<a />')
-          .text(date.getDate() +'.'+ date.getMonth()+1)
+          .text(date.getDate() +'.'+ (date.getMonth()+1))
           .attr('href', '#!/'+ app.db.name +'/'+ day.id)
           .attr('rel', start)
           .click(function(){
