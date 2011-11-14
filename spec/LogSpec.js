@@ -61,7 +61,7 @@ describe('logger', function(){
     });
 
     new Pigeons({ server: 'http://localhost:4000' }, function(){
-      this.db = 'http://user:password@localhost:4001';
+      this.db = 'http://localhost:4001';
       this.log = 'http://localhost:4002';
       this.getTimetable('/');
     });

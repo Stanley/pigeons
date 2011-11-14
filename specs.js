@@ -1,6 +1,5 @@
 var jasmine = require('jasmine-node');
-var sys = require('sys'),
-    Path= require('path');
+var Path= require('path');
 
 var SPEC_FOLDER= Path.join(process.cwd(), 'spec'),
     SPEC_MATCHER_REGEX= "Spec\.(js|coffee)$",
