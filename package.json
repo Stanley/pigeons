@@ -6,11 +6,11 @@
   "main"        : "lib/pigeons.js",
   "dependencies": {
     "request"     : "1.9.8",
-    "jsdom"       : "0.2.0",
-    "couchapp"    : "0.8.0",
-    "hashlib"     : "1.0.1",
+    "jsdom"       : "0.2.10",
+    "couchapp"    : "0.8.1",
+    "hashlib"     : "1.0.2",
     "buffertools" : "1.0.5",
-    "async"       : "0.1.9",
+    "async"       : "0.1.15",
     "iconv"       : "1.1.2"
   },
   "repository"  : { 
