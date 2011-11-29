@@ -114,6 +114,7 @@ ddoc.views['recent_timetables'] = {
     }
   },
   reduce: function(keys, values, rereduce){
+    if(!keys) return {}
     pairs = keys.map(function(key,i){ return [key[0][2], {etag:values[i], type:key[0][3]}] });
     var latest = pairs.sort()[pairs.length-1][1];
     return latest;
