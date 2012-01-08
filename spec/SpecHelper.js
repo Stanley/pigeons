@@ -15,5 +15,9 @@ CreateDocument = function(body){
 };
 
 Sizzle = function(body){
-  return sizzle.run(Jsdom.jsdom(CreateDocument(body), null, {url: '/'}).createWindow().document);
+  return sizzle.run(Dom(body).document);
+}
+
+Dom = function(body){
+  return Jsdom.jsdom(CreateDocument(body), null, {url: '/'}).createWindow()
 }

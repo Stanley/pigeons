@@ -25,7 +25,7 @@ describe('status code 200', function(){
   it('should result in further page processing', function(){
     var html =  CreateDocument();
     this.pigeons.getTimetable('/timetables/1', this.callback);
-    this.pigeons.get.mostRecentCall.args[1](Sizzle(html), {}, html, true);
+    this.pigeons.get.mostRecentCall.args[1](Dom(html), {}, html, true);
 
     expect(this.pigeons.parseTimetable).toHaveBeenCalled();
     //expect(this.callback).toHaveBeenCalled() todo: catch put request

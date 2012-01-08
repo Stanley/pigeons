@@ -32,7 +32,7 @@ describe('scanner', function(){
 
     waitsFor(function(){ return pigeons.get.mostRecentCall.args }, 1000);
     runs(function(){
-      pigeons.get.mostRecentCall.args[1](Sizzle(body));
+      pigeons.get.mostRecentCall.args[1](Dom(body));
 
       expect(callback).toHaveBeenCalled();
       expect(pigeons.get).toHaveBeenCalled();
@@ -61,7 +61,7 @@ describe('scanner', function(){
 
     var callback = jasmine.createSpy();
     pigeons.getLine('/lines/1', callback);
-    pigeons.get.mostRecentCall.args[1](Sizzle(body));
+    pigeons.get.mostRecentCall.args[1](Dom(body));
 
     expect(callback).toHaveBeenCalled();
     expect(pigeons.get.callCount).toEqual(1);
@@ -104,7 +104,7 @@ describe('scanner', function(){
     });
 
     pigeons.getLine('/lines/2', function(){});
-    pigeons.get.mostRecentCall.args[1](Sizzle(body));
+    pigeons.get.mostRecentCall.args[1](Dom(body));
 
     expect(pigeons.getTimetable.argsForCall[0][0]).toEqual('/bar/1');
   });
@@ -116,7 +116,7 @@ describe('scanner', function(){
 
     spyOn(pigeons, 'get');
     pigeons.getLine('/lines/3', function(){});
-    pigeons.get.mostRecentCall.args[1](Sizzle(body));
+    pigeons.get.mostRecentCall.args[1](Dom(body));
 
     expect(pigeons.get.mostRecentCall.args[0]).toEqual('/lines/B');
   });
@@ -129,7 +129,7 @@ describe('scanner', function(){
 
     spyOn(pigeons, 'get');
     pigeons.getLine('/lines/4', function(){});
-    pigeons.get.mostRecentCall.args[1](Sizzle(body));
+    pigeons.get.mostRecentCall.args[1](Dom(body));
 
     expect(pigeons.get.mostRecentCall.args[0]).toEqual('/bar/C');
   });
@@ -147,7 +147,7 @@ describe('database adapter', function(){
     spyOn(pigeons, 'put');
 
     pigeons.getTimetable('/timetables/1')
-    pigeons.get.mostRecentCall.args[1](Sizzle(body), {}, document);
+    pigeons.get.mostRecentCall.args[1](Dom(body), {}, document);
 
     expect(pigeons.get).toHaveBeenCalled();
     expect(pigeons.put).toHaveBeenCalled();

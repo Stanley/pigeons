@@ -99,7 +99,7 @@ describe('logger', function(){
       this.db = 'http://localhost:4001';
       this.getAll();
     }), 'get').andCallFake(function(){
-      this.get.mostRecentCall.args[1]();
+      this.get.mostRecentCall.args[1](Dom(''));
     })
 
     waitsFor(function(){ return log }, 'log', 1000);
