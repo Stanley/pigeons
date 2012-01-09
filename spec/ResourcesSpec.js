@@ -44,6 +44,26 @@ describe('scanner', function(){
     })
   });
 
+  it('should urlencode urls', function(){
+    var config = {db: 'http://localhost:6001', get: {lines: ".Line"}};
+    var pigeons = new Pigeons(config);
+    var body = "<a href=\"/lines/1 A\" class=\"Line\">1 A</a>"
+
+    spyOn(pigeons, 'get');
+    spyOn(pigeons, 'getLine').andCallFake(function(){
+      pigeons.getLine.mostRecentCall.args[1]();
+    });
+
+    var callback = jasmine.createSpy();
+    pigeons.getAll(callback);
+
+    waitsFor(function(){ return pigeons.get.mostRecentCall.args }, 1000);
+    runs(function(){
+      pigeons.get.mostRecentCall.args[1](Dom(body));
+      expect(pigeons.getLine.argsForCall[0][0]).toEqual('/lines/1%20A');
+    })
+  });
+
   it('should follow links to opposite lines', function(){
   });
 
