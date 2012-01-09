@@ -39,4 +39,18 @@ describe('Remote server', function(){
     });
     waitsFor(function(){ return finished }, 100, 'callback');
   });
+
+  it('fails to return line page', function(){
+    server.once('/lines/1', function(req, resp){
+      resp.writeHead(500, {'content-type':'application/json'});
+      resp.write(JSON.stringify({error: "Bad Request"}));
+      resp.end();
+    })
+    var finished, pigeons = new Pigeons({ server: 'http://localhost:6000' });
+    pigeons.getLine('/lines/1', function(){
+      finished = true;
+    })
+    // Callback should be called
+    waitsFor(function(){ return finished }, 100, 'callback');
+  })
 });
