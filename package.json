@@ -1,11 +1,11 @@
 {
   "name"        : "pigeons",
-  "version"     : "0.2.6",
+  "version"     : "0.2.7",
   "author"      : "Stanisław Wasiutyński <staszek.wasiutynski@gmail.com>",
   "description" : "i can haz timetables",
   "main"        : "lib/pigeons.js",
   "dependencies": {
-    "request"     : "1.9.8",
+    "request"     : "2.9.3",
     "jsdom"       : "0.2.10",
     "couchapp"    : "0.8.1",
     "hashlib"     : "1.0.2",
